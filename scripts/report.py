@@ -49,6 +49,9 @@ def main() -> int:
     reviews = state.get("reviews", {})
     roots_state = state.get("roots", {})
     meta = state.get("meta", {})
+    if not roots_state:
+        print("No collected roots; refusing to overwrite the last report", file=sys.stderr)
+        return 1
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     rows = sorted(reviews.values(), key=lambda r: r.get("q", ""))

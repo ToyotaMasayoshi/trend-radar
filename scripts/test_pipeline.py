@@ -114,6 +114,29 @@ def test_rate_limited_stops():
     check("429: stops round, reports flag", hit and refreshed == 0 and rising == 0)
 
 
+def test_empty_report_is_rejected():
+    state_f = ROOT / "state" / "state.json"
+    out_f = ROOT / "site" / "data" / "daily.json"
+    bak_s = state_f.read_text(encoding="utf-8") if state_f.exists() else None
+    bak_o = out_f.read_text(encoding="utf-8") if out_f.exists() else None
+    try:
+        state_f.unlink(missing_ok=True)
+        out_f.parent.mkdir(parents=True, exist_ok=True)
+        out_f.write_text("last successful report", encoding="utf-8")
+        check("report: empty state rejected", report.main() == 1)
+        check("report: last output preserved",
+              out_f.read_text(encoding="utf-8") == "last successful report")
+    finally:
+        if bak_s is None:
+            state_f.unlink(missing_ok=True)
+        else:
+            state_f.write_text(bak_s, encoding="utf-8")
+        if bak_o is None:
+            out_f.unlink(missing_ok=True)
+        else:
+            out_f.write_text(bak_o, encoding="utf-8")
+
+
 def test_report_renders():
     state_f = ROOT / "state" / "state.json"
     clu_f = ROOT / "state" / "clusters.json"

@@ -240,6 +240,9 @@ def main() -> int:
         print("partial failures: Google Trends returned HTTP 429")
     print(f"roots {refreshed}/{len(roots)}; candidates {len(candidates)}; "
           f"reviewed {reviewed}; requests {client.requests}")
+    if not state.get("roots"):
+        print("No valid collection state; refusing to build an empty report", file=sys.stderr)
+        return 1
     return 0
 
 
