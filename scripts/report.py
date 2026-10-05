@@ -24,10 +24,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from collect import build_candidates, normalize
+
 STATE_FILE = ROOT / "state" / "state.json"
 CLUSTERS_FILE = ROOT / "state" / "clusters.json"
 
-VERDICT_CN = {"new": "新词", "revived": "老词二次爆火", "spike": "短时尖峰", "watch": "待观察"}
+VERDICT_CN = {"new": "新词", "revived": "老词二次爆火", "spike": "短时尖峰",
+              "watch": "待观察", "pending": "待复核"}
 
 
 def trends_link(term: str) -> str:
@@ -54,7 +58,9 @@ def main() -> int:
         return 1
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    rows = sorted(reviews.values(), key=lambda r: r.get("q", ""))
+    pending = [dict(c, verdict="pending", note="已采集，等待历史复核")
+               for c in build_candidates(state) if normalize(c["q"]) not in reviews]
+    rows = sorted([*reviews.values(), *pending], key=lambda r: r.get("q", ""))
     by_verdict: dict[str, list] = {}
     for r in rows:
         by_verdict.setdefault(r["verdict"], []).append(r)
@@ -131,6 +137,7 @@ def main() -> int:
     table("老词二次爆火", by_verdict.get("revived", []))
     table("短时尖峰", by_verdict.get("spike", []))
     table("复核后排除 / 待观察", by_verdict.get("watch", []))
+    table("待复核", by_verdict.get("pending", []))
 
     A(f"\n## 事件簇（共 {len(clusters)} 个）\n")
     A("\n| 事件 | 变体数 | 阶段 | 来源词根 | 备注 |")

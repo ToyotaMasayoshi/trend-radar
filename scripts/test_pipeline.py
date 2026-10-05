@@ -176,7 +176,9 @@ def test_report_renders():
         state_f.write_text(json.dumps({
             "roots": {"ai": {"windows": {"now 7-d": [
                 {"q": "strata qwen", "growth": None, "breakout": True,
-                 "formatted": "飙升"}]}}},
+                 "formatted": "飙升"},
+                {"q": "pending term", "growth": 500, "breakout": False,
+                 "formatted": "+500%"}]}}},
             "reviews": {"strata qwen": {
                 "q": "strata qwen", "verdict": "new", "note": "t",
                 "growth": None, "breakout": True, "formatted": "飙升",
@@ -190,7 +192,10 @@ def test_report_renders():
         assert report.main() == 0
         daily = json.loads((ROOT / "site" / "data" / "daily.json").read_text(encoding="utf-8"))
         md = (ROOT / "reports").glob("*.md")
-        check("report: daily.json valid", daily["stats"]["candidates"] == 1)
+        check("report: daily.json valid", daily["stats"]["candidates"] == 2)
+        check("report: unreviewed candidates stay pending",
+              any(row["q"] == "pending term" and row["verdict"] == "pending"
+                  for row in daily["candidates"]))
         check("report: markdown written", any(md))
         check("report: no secrets leaked",
               "Cookie" not in json.dumps(daily) and "Traceback" not in json.dumps(daily))
