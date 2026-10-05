@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trend Radar 日报</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:1100px;margin:0 auto;padding:16px;color:#222}
+h1{font-size:22px}h2{font-size:18px;margin-top:28px;border-bottom:1px solid #ddd;padding-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#f5f5f5}.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;color:#fff}
+.new{background:#2a9d48}.revived{background:#d97b1a}.spike{background:#8a63d2}.watch{background:#888}
+#filters button{margin:2px;padding:4px 10px;cursor:pointer}
+.note{color:#666;font-size:12px}
+</style>
+</head>
+<body>
+<h1>Trend Radar 新词日报</h1>
+<p class="note" id="meta">加载中…</p>
+<div id="filters">
+<button data-v="all">全部</button><button data-v="new">新词</button><button data-v="revived">二次爆火</button><button data-v="spike">短时尖峰</button><button data-v="watch">待观察</button>
+</div>
+<h2>候选词</h2>
+<table id="tbl"><thead><tr><th>词</th><th>结论</th><th>涨幅</th><th>来源词根</th><th>vs gpts</th><th>备注</th></tr></thead><tbody></tbody></table>
+<h2>事件簇</h2>
+<table id="ctbl"><thead><tr><th>事件</th><th>变体</th><th>阶段</th><th>假设状态</th></tr></thead><tbody></tbody></table>
+<p class="note">Trends 数值为同图 0~100 相对热度，非搜索量。假设类字段为运行假设（hypothesis），非已确认事实。</p>
+<script>
+const CN={new:"新词",revived:"老词二次爆火",spike:"短时尖峰",watch:"待观察"};
+let C=[];
+fetch("data/daily.json").then(r=>r.json()).then(d=>{
+  document.getElementById("meta").textContent=
+    `更新：${d.updated_at} · 词根 ${d.stats.roots_cached}/${d.stats.roots_total} · 候选 ${d.stats.candidates} · 请求 ${d.stats.requests}${d.stats.rate_limited?" · 本轮遇到429":""}`;
+  C=d.candidates;
+  render("all");
+  const cb=document.querySelector("#ctbl tbody");
+  d.clusters.forEach(c=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.canonical_term}</td><td>${c.variants.map(v=>v.term).join("、")}</td><td>${c.stage}</td><td>${Object.entries(c.hypotheses).map(([k,v])=>k+":"+v).join("<br>")}</td>`;
+    cb.appendChild(tr);
+  });
+});
+function render(v){
+  const tb=document.querySelector("#tbl tbody");tb.innerHTML="";
+  C.filter(c=>v==="all"||c.verdict===v).forEach(c=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><a href="https://trends.google.com/trends/explore?date=now%207-d&q=${encodeURIComponent(c.q)}" target="_blank" rel="noopener">${c.q}</a></td><td><span class="tag ${c.verdict}">${CN[c.verdict]}</span></td><td>${c.formatted||"—"}</td><td>${(c.roots||[]).join("、")}</td><td>${c.vs_gpts??"—"}</td><td>${c.note||""}</td>`;
+    tb.appendChild(tr);
+  });
+}
+document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>render(b.dataset.v));
+</script>
+</body>
+</html>
