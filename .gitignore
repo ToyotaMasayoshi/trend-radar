@@ -1,0 +1,6 @@
+state/state.json
+state/clusters.json
+site/data/daily.json
+reports/*.md
+__pycache__/
+*.pyc
