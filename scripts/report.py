@@ -1,0 +1,165 @@
+#!/usr/bin/env python3
+"""Render the daily report: site/data/daily.json + reports/YYYY-MM-DD.md.
+
+Sections mirror the reference daily:
+  1. title + round summary
+  2. high-rise table (Breakout or >=1000%)
+  3. new terms
+  4. revived terms
+  5. short spikes
+  6. reviewed-but-excluded / watch
+  7. event clusters
+  8. raw per-root rising lists
+  9. data boundaries
+
+Never writes credentials, cookies, tracebacks, or network internals.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+import urllib.parse
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+STATE_FILE = ROOT / "state" / "state.json"
+CLUSTERS_FILE = ROOT / "state" / "clusters.json"
+
+VERDICT_CN = {"new": "新词", "revived": "老词二次爆火", "spike": "短时尖峰", "watch": "待观察"}
+
+
+def trends_link(term: str) -> str:
+    q = urllib.parse.quote(term)
+    return f"https://trends.google.com/trends/explore?date=now%207-d&q={q}"
+
+
+def sparkline(values: list) -> str:
+    peak = max(values, default=0)
+    blocks = "▁▂▃▄▅▆▇"
+    if not peak:
+        return "".join("·" for _ in values)
+    return "".join(blocks[min(6, int(v / peak * 6))] for v in values)
+
+
+def main() -> int:
+    state = json.loads(STATE_FILE.read_text(encoding="utf-8")) if STATE_FILE.exists() else {}
+    clusters = json.loads(CLUSTERS_FILE.read_text(encoding="utf-8")) if CLUSTERS_FILE.exists() else []
+    reviews = state.get("reviews", {})
+    roots_state = state.get("roots", {})
+    meta = state.get("meta", {})
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    rows = sorted(reviews.values(), key=lambda r: r.get("q", ""))
+    by_verdict: dict[str, list] = {}
+    for r in rows:
+        by_verdict.setdefault(r["verdict"], []).append(r)
+    high = [r for r in rows
+            if r.get("breakout") or (r.get("growth") or 0) >= 1000]
+    rising_total = sum(len(rec.get("windows", {}).get(w, []))
+                       for rec in roots_state.values() for w in ("now 7-d", "now 1-d"))
+
+    # -- daily.json -------------------------------------------------------
+    daily = {
+        "updated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "source": "Google Trends Explore related rising queries and interest over time",
+        "windows": ["now 7-d", "now 1-d"],
+        "review_windows": ["today 12-m", "today 1-m", "now 7-d vs gpts", "today 5-y"],
+        "method": {
+            "candidate_rule": "All related rising queries after normalized dedup; "
+                              "high-rise subset is Breakout or growth >= 1000%",
+            "new_rule": "pre-rise peak < 1% of recent-6-week peak and no 5y history",
+            "revived_rule": "history >1y ago, or recent peak >= 5x prior median",
+            "spike_rule": "1-2 active days in 30d and already faded",
+        },
+        "stats": {
+            "roots_total": 526,
+            "roots_cached": len(roots_state),
+            "rising_terms": rising_total,
+            "candidates": len(rows),
+            "reviewed": len(rows),
+            "high_rise": len(high),
+            "by_verdict": {k: len(v) for k, v in by_verdict.items()},
+            "requests": meta.get("requests", 0),
+            "rate_limited": meta.get("rate_limited", False),
+        },
+        "candidates": [
+            {"q": r["q"], "verdict": r["verdict"], "verdict_cn": VERDICT_CN[r["verdict"]],
+             "growth": r.get("growth"), "breakout": r.get("breakout"),
+             "formatted": r.get("formatted"), "roots": r.get("roots", []),
+             "windows": r.get("windows", []), "vs_gpts": r.get("vs_gpts"),
+             "recent_to_baseline": r.get("recent_to_baseline"),
+             "note": r.get("note"),
+             "yearly_12m": r.get("yearly", []), "daily_30d": r.get("monthly_30d", [])}
+            for r in rows
+        ],
+        "clusters": clusters,
+    }
+    out_json = ROOT / "site" / "data" / "daily.json"
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(daily, ensure_ascii=False), encoding="utf-8")
+
+    # -- markdown ----------------------------------------------------------
+    L: list[str] = []
+    A = L.append
+    new_n = len(by_verdict.get("new", []))
+    rev_n = len(by_verdict.get("revived", []))
+    A(f"# {today} 新词日报\n")
+    A(f"地区：全球 · 词根已查 {len(roots_state)}/526 个 · 时间窗 now 7-d, now 1-d · "
+      f"上升词 {rising_total} 条 → 候选 {len(rows)} 个 · 已复核 {len(rows)} 个 · "
+      f"**新词 {new_n} 个 · 老词二次爆火 {rev_n} 个**\n")
+    A("> 趋势数据是 0~100 的相对热度，不是搜索量；「vs gpts」是同一张图里最近 7 天热度的倍数。\n")
+    A("> 新词只说明「刚出现」，能不能做还要看搜索量、KD 和 SERP。\n")
+
+    def table(title: str, items: list) -> None:
+        A(f"\n## {title}（共 {len(items)} 个）\n")
+        A("\n| 上升词 | 涨幅 | 来源词根 | 复核结论 | 近7天 vs gpts | 备注 |")
+        A("\n|---|---|---|---|---|---|")
+        for r in items:
+            roots = "、".join(r.get("roots", [])[:4])
+            vs = r.get("vs_gpts")
+            A(f"\n| [{r['q']}]({trends_link(r['q'])}) | {r.get('formatted') or '—'} | "
+              f"{roots} | {VERDICT_CN[r['verdict']]} | {vs if vs is not None else '—'} | {r.get('note') or ''} |")
+        A("\n")
+
+    table("高涨幅上升词（≥1000% 或飙升）", high)
+    table("新词", by_verdict.get("new", []))
+    table("老词二次爆火", by_verdict.get("revived", []))
+    table("短时尖峰", by_verdict.get("spike", []))
+    table("复核后排除 / 待观察", by_verdict.get("watch", []))
+
+    A(f"\n## 事件簇（共 {len(clusters)} 个）\n")
+    A("\n| 事件 | 变体数 | 阶段 | 来源词根 | 备注 |")
+    A("\n|---|---|---|---|---|")
+    for c in clusters:
+        var_terms = "、".join(v["term"] for v in c["variants"][:5])
+        A(f"\n| {c['canonical_term']} | {len(c['variants'])} | {c['stage']} | "
+          f"{'、'.join(c['roots'][:3])} | 变体：{var_terms} |")
+    A("\n")
+
+    A("\n## 各词根上升词（原始）\n")
+    for root in sorted(roots_state):
+        rec = roots_state[root]
+        parts = []
+        for w in ("now 7-d", "now 1-d"):
+            for row in rec.get("windows", {}).get(w, []):
+                parts.append(f"{row['q']} {row['formatted']}")
+        if parts:
+            A(f"\n- **{root}**：{'、'.join(parts)}")
+    A("\n")
+
+    A("\n## 数据边界说明\n")
+    A("\n- Google Trends 数值为同一图表内 0~100 相对热度，不是绝对搜索量。")
+    A("\n- `now 7-d` / `now 1-d` 为滚动窗口；历史回放与采集当时不一定是同一快照。")
+    A("\n- vs gpts 为同图相对倍数。短时尖峰须由 30 天日线直接证明，证据不足只标待观察。")
+    A("\n- 假设类字段（如 AI 发现/推荐机制）为运行假设，标注为 hypothesis，不作为已确认事实。\n")
+
+    out_md = ROOT / "reports" / f"{today}.md"
+    out_md.write_text("".join(L), encoding="utf-8")
+    print(f"wrote {out_json} and {out_md}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
