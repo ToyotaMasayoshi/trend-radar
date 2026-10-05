@@ -156,6 +156,7 @@ def main() -> int:
     A("\n- 假设类字段（如 AI 发现/推荐机制）为运行假设，标注为 hypothesis，不作为已确认事实。\n")
 
     out_md = ROOT / "reports" / f"{today}.md"
+    out_md.parent.mkdir(parents=True, exist_ok=True)
     out_md.write_text("".join(L), encoding="utf-8")
     print(f"wrote {out_json} and {out_md}")
     return 0
