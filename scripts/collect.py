@@ -187,7 +187,10 @@ def review_candidates(client: TrendsClient, candidates: list, state: dict,
                       limit: int) -> tuple[int, bool]:
     """Review up to `limit` unreviewed candidates. Returns (reviewed, rate_limited)."""
     reviews = state.setdefault("reviews", {})
-    pending = [c for c in candidates if normalize(c["q"]) not in reviews]
+    pending = sorted(
+        (c for c in candidates if normalize(c["q"]) not in reviews),
+        key=lambda c: (not c["breakout"], -(c["growth"] or 0), normalize(c["q"])),
+    )
     reviewed = 0
     try:
         for cand in pending[:limit]:
@@ -223,11 +226,14 @@ def main() -> int:
     client = TrendsClient()
     rate_limited = False
 
-    refreshed, rising, hit = collect_roots(client, roots, state, args.root_limit, args.force)
-    rate_limited |= hit
     candidates = build_candidates(state)
     reviewed, hit = review_candidates(client, candidates, state, args.review_limit)
     rate_limited |= hit
+    refreshed, rising = 0, 0
+    if not rate_limited:
+        refreshed, rising, hit = collect_roots(client, roots, state, args.root_limit, args.force)
+        rate_limited |= hit
+        candidates = build_candidates(state)
 
     if refreshed or reviewed:
         state["meta"] = {"updated": iso_now(), "requests": client.requests,

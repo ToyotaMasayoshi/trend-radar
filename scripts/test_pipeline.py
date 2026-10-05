@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from collect import build_candidates, classify, collect_roots, normalize
+from collect import build_candidates, classify, collect_roots, normalize, review_candidates
 from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
 import report
@@ -125,6 +125,23 @@ def test_trends_client_warms_google_session():
     request = opener.open.call_args.args[0]
     check("trends: warms Google session",
           request.full_url == "https://www.google.com/" and client.requests == 1)
+
+
+def test_review_prioritizes_breakout():
+    class FakeClient:
+        def timeline(self, keywords, timeframe):
+            return {keyword: pts([1]) for keyword in keywords}
+
+    candidates = [
+        {"q": "low", "growth": 10, "breakout": False, "formatted": "+10%",
+         "roots": ["a"], "windows": ["now 7-d"]},
+        {"q": "breakout", "growth": None, "breakout": True, "formatted": "飙升",
+         "roots": ["a"], "windows": ["now 7-d"]},
+    ]
+    state = {}
+    reviewed, limited = review_candidates(FakeClient(), candidates, state, 1)
+    check("review: breakout first",
+          reviewed == 1 and not limited and "breakout" in state["reviews"])
 
 
 def test_empty_report_is_rejected():
