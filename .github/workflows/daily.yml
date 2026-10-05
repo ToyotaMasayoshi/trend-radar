@@ -1,0 +1,19 @@
+name: Daily radar
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+jobs:
+  collect-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -B scripts/test_pipeline.py
+      - run: python3 -B scripts/collect.py
+      - run: python3 -B scripts/cluster.py
+      - run: python3 -B scripts/report.py
