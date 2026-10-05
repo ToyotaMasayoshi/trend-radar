@@ -87,7 +87,7 @@ def main() -> int:
             "roots_cached": len(roots_state),
             "rising_terms": rising_total,
             "candidates": len(rows),
-            "reviewed": len(rows),
+            "reviewed": len(reviews),
             "high_rise": len(high),
             "by_verdict": {k: len(v) for k, v in by_verdict.items()},
             "requests": meta.get("requests", 0),
