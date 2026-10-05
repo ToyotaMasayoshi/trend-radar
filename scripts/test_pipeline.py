@@ -8,11 +8,12 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from collect import build_candidates, classify, collect_roots, normalize
 from cluster import build_clusters, HYPOTHESES
-from trends import RateLimited
+from trends import RateLimited, TrendsClient
 import report
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,6 +113,18 @@ def test_rate_limited_stops():
             raise RateLimited("429")
     refreshed, rising, hit = collect_roots(DeadClient(), ["ai"], {}, 526, True)
     check("429: stops round, reports flag", hit and refreshed == 0 and rising == 0)
+
+
+def test_trends_client_warms_google_session():
+    opener = MagicMock()
+    response = MagicMock()
+    response.__enter__.return_value = response
+    opener.open.return_value = response
+    with patch("trends.urllib.request.build_opener", return_value=opener):
+        client = TrendsClient(delay=0)
+    request = opener.open.call_args.args[0]
+    check("trends: warms Google session",
+          request.full_url == "https://www.google.com/" and client.requests == 1)
 
 
 def test_empty_report_is_rejected():

@@ -4,6 +4,9 @@
 Wraps the unofficial trends.google.com API endpoints:
   explore -> widget tokens -> widgetdata/relatedsearches | widgetdata/multiline
 
+The client first opens google.com to establish the normal Google session
+cookies required by Trends.
+
 On HTTP 429 a RateLimited error is raised immediately. Callers must stop the
 round, keep the last successful output, and never synthesize fake zeros.
 """
@@ -37,7 +40,18 @@ class TrendsClient:
         jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
         self.delay = delay
-        self.requests = 0
+        self.requests = 1
+        request = urllib.request.Request("https://www.google.com/", headers={
+            "User-Agent": "Mozilla/5.0 (compatible; TrendRadar/1.0)",
+            "Accept-Language": "en-US,en;q=0.9",
+        })
+        try:
+            with self.opener.open(request, timeout=25) as response:
+                response.read(1)
+        except urllib.error.HTTPError as error:
+            if error.code == 429:
+                raise RateLimited("Google session returned HTTP 429") from error
+            raise
 
     def get(self, path: str, params: dict) -> dict:
         url = BASE + path + "?" + urllib.parse.urlencode(params)
