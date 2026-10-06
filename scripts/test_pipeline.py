@@ -52,7 +52,7 @@ def test_feedback_and_spread_guards():
     response = MagicMock()
     response.__enter__.return_value.read.return_value = json.dumps(daily).encode()
     with patch.object(github_radar_watch.urllib.request, "urlopen", return_value=response):
-        added = github_radar_watch.feedback_roots(set())
+        added = github_radar_watch.feedback_roots({}, set())
     check("feedback: only clean new/revived roots", added == ["mesh avatar studio"])
 
     saved = {}
