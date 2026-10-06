@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import statistics
 import sys
 import unicodedata
@@ -41,6 +42,14 @@ WINDOWS = ("now 7-d", "now 1-d")
 ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "24")))
 REVIEWS_PER_RUN = max(1, int(os.getenv("REVIEWS_PER_RUN", "8")))
 HIGH_RISE_CUT = 1000  # percent; display subset only
+ENTERTAINMENT_MARKERS = (
+    "game", "games", "gaming", "roblox", "wordle", "quiz", "puzzle",
+    "song", "music", "movie", "film", "anime", "manga", "celebrity",
+    "actor", "actress", "singer", "football", "soccer", "basketball",
+    "baseball", "cricket", "sports", "tiktok", "youtube", "instagram",
+    "游戏", "歌曲", "音乐", "电影", "影视", "动漫", "明星", "演员",
+    "歌手", "综艺", "足球", "篮球", "体育", "谜题", "测验",
+)
 
 
 def iso_now() -> str:
@@ -49,6 +58,13 @@ def iso_now() -> str:
 
 def normalize(value: str) -> str:
     return " ".join(unicodedata.normalize("NFKC", value or "").casefold().split())
+
+
+def is_entertainment(term: str, roots: list[str]) -> bool:
+    """Deterministic policy label from the term and its source roots."""
+    text = " ".join(normalize(v) for v in [term, *roots])
+    return any(re.search(rf"(?<![a-z0-9]){re.escape(marker)}(?![a-z0-9])", text)
+               for marker in ENTERTAINMENT_MARKERS)
 
 
 def load_json(path: Path, fallback):
@@ -103,11 +119,14 @@ def classify(yearly: list, monthly: list, weekly: list, weekly_gpts: list,
     day_peak = max(m, default=0)
     short_spike = bool(revived and 0 < active_days <= 2 and m and m[-1] < day_peak)
 
-    w = [p["value"] for p in weekly]
-    g = [p["value"] for p in weekly_gpts]
-    w_mean = statistics.mean(w) if w else 0
-    g_mean = statistics.mean(g) if g else 0
-    vs_gpts = round(w_mean / g_mean, 1) if g_mean else None
+    # Both series come from the same Trends chart. The ratio of aligned sums
+    # preserves small values and is comparable across candidates using gpts as
+    # the fixed reference; it is still a relative proxy, not absolute volume.
+    pairs = list(zip((p["value"] for p in weekly),
+                     (p["value"] for p in weekly_gpts)))
+    term_total = sum(term for term, _ in pairs)
+    gpts_total = sum(gpts for _, gpts in pairs)
+    vs_gpts = round(term_total / gpts_total, 4) if gpts_total else None
 
     if short_spike:
         verdict, note = "spike", "30天内仅一两个活跃日且已回落，短时尖峰"
@@ -122,7 +141,9 @@ def classify(yearly: list, monthly: list, weekly: list, weekly_gpts: list,
         "verdict": verdict, "note": note,
         "recent_peak": recent_peak, "prior_peak": prior_peak,
         "baseline": baseline, "recent_to_baseline": multiple,
-        "vs_gpts": vs_gpts, "active_days_30d": active_days,
+        "vs_gpts": vs_gpts, "vs_gpts_points": len(pairs),
+        "term_7d_total": term_total, "gpts_7d_total": gpts_total,
+        "active_days_30d": active_days,
         "yearly": y, "monthly_30d": m,
     }
 

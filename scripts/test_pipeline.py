@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from collect import build_candidates, classify, collect_roots, normalize, review_candidates
+from collect import build_candidates, classify, collect_roots, is_entertainment, normalize, review_candidates
 from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
 import report
@@ -67,8 +67,27 @@ def test_classify_watch():
 def test_vs_gpts_relative():
     r = classify(pts([0] * 46 + [0, 0, 0, 0, 80, 100]), pts([0] * 30),
                  pts([80, 100]), pts([10, 10]), pts([0] * 260))
-    check("classify: vs_gpts is a relative multiple",
-          r["vs_gpts"] is not None and r["vs_gpts"] > 1)
+    check("classify: vs_gpts uses aligned 7d totals",
+          r["vs_gpts"] == 9 and r["vs_gpts_points"] == 2)
+
+
+def test_entertainment_policy():
+    row = report.apply_policy({"q": "new game guide", "roots": ["game"],
+                               "verdict": "new", "vs_gpts": 0.0004}, True)
+    check("policy: entertainment stays in watch",
+          is_entertainment(row["q"], row["roots"]) and row["verdict"] == "watch"
+          and row["trend_verdict"] == "new")
+    check("report: tiny vs_gpts keeps useful precision",
+          row["vs_gpts_display"] == "<0.001×")
+
+
+def test_ranking():
+    rows = [{"q": "low", "growth": 20, "vs_gpts": 4},
+            {"q": "high", "growth": 900, "vs_gpts": 1},
+            {"q": "breakout", "breakout": True, "vs_gpts": 0.1}]
+    check("ranking: breakout then growth descending",
+          [r["q"] for r in sorted(rows, key=report.ranking_key)]
+          == ["breakout", "high", "low"])
 
 
 def test_dedup_keeps_roots():
@@ -193,6 +212,7 @@ def test_report_renders():
         daily = json.loads((ROOT / "site" / "data" / "daily.json").read_text(encoding="utf-8"))
         md = (ROOT / "reports").glob("*.md")
         check("report: daily.json valid", daily["stats"]["candidates"] == 2)
+        check("report: reviewed count excludes pending", daily["stats"]["reviewed"] == 1)
         check("report: unreviewed candidates stay pending",
               any(row["q"] == "pending term" and row["verdict"] == "pending"
                   for row in daily["candidates"]))

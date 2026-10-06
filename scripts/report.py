@@ -25,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from collect import build_candidates, normalize
+from collect import build_candidates, is_entertainment, normalize
 
 STATE_FILE = ROOT / "state" / "state.json"
 CLUSTERS_FILE = ROOT / "state" / "clusters.json"
@@ -47,6 +47,36 @@ def sparkline(values: list) -> str:
     return "".join(blocks[min(6, int(v / peak * 6))] for v in values)
 
 
+def format_vs_gpts(value) -> str:
+    if value is None:
+        return "—"
+    if 0 < value < 0.001:
+        return "<0.001×"
+    return f"{value:.4f}".rstrip("0").rstrip(".") + "×"
+
+
+def apply_policy(item: dict, reviewed: bool) -> dict:
+    row = dict(item)
+    row["reviewed"] = reviewed
+    row["entertainment"] = is_entertainment(row.get("q", ""), row.get("roots", []))
+    if row["entertainment"]:
+        trend_verdict = row.get("verdict") if reviewed else None
+        row["trend_verdict"] = trend_verdict
+        row["verdict"] = "watch"
+        row["note"] = ("娱乐性信息，按方法论列入观察；趋势复核结论："
+                       + VERDICT_CN.get(trend_verdict, "尚未复核"))
+    row["vs_gpts_display"] = format_vs_gpts(row.get("vs_gpts"))
+    return row
+
+
+def ranking_key(row: dict) -> tuple:
+    growth = float("inf") if row.get("breakout") else row.get("growth")
+    growth = growth if isinstance(growth, (int, float)) else -1
+    volume = row.get("vs_gpts")
+    volume = volume if isinstance(volume, (int, float)) else -1
+    return (-growth, -volume, normalize(row.get("q", "")))
+
+
 def main() -> int:
     state = json.loads(STATE_FILE.read_text(encoding="utf-8")) if STATE_FILE.exists() else {}
     clusters = json.loads(CLUSTERS_FILE.read_text(encoding="utf-8")) if CLUSTERS_FILE.exists() else []
@@ -58,9 +88,10 @@ def main() -> int:
         return 1
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    pending = [dict(c, verdict="pending", note="已采集，等待历史复核")
+    pending = [apply_policy(dict(c, verdict="pending", note="已采集，等待历史复核"), False)
                for c in build_candidates(state) if normalize(c["q"]) not in reviews]
-    rows = sorted([*reviews.values(), *pending], key=lambda r: r.get("q", ""))
+    reviewed_rows = [apply_policy(r, True) for r in reviews.values()]
+    rows = sorted([*reviewed_rows, *pending], key=ranking_key)
     by_verdict: dict[str, list] = {}
     for r in rows:
         by_verdict.setdefault(r["verdict"], []).append(r)
@@ -81,6 +112,9 @@ def main() -> int:
             "new_rule": "pre-rise peak < 1% of recent-6-week peak and no 5y history",
             "revived_rule": "history >1y ago, or recent peak >= 5x prior median",
             "spike_rule": "1-2 active days in 30d and already faded",
+            "entertainment_rule": "entertainment terms stay in watch regardless of trend verdict",
+            "ranking_rule": "growth descending; optional relative-volume sort uses 7d vs gpts",
+            "volume_boundary": "vs gpts is a same-chart relative proxy, not absolute search volume",
         },
         "stats": {
             "roots_total": 526,
@@ -98,6 +132,10 @@ def main() -> int:
              "growth": r.get("growth"), "breakout": r.get("breakout"),
              "formatted": r.get("formatted"), "roots": r.get("roots", []),
              "windows": r.get("windows", []), "vs_gpts": r.get("vs_gpts"),
+             "vs_gpts_display": r.get("vs_gpts_display"),
+             "vs_gpts_points": r.get("vs_gpts_points"),
+             "reviewed": r.get("reviewed"), "entertainment": r.get("entertainment"),
+             "trend_verdict": r.get("trend_verdict"),
              "recent_to_baseline": r.get("recent_to_baseline"),
              "note": r.get("note"),
              "yearly_12m": r.get("yearly", []), "daily_30d": r.get("monthly_30d", [])}
@@ -116,7 +154,7 @@ def main() -> int:
     rev_n = len(by_verdict.get("revived", []))
     A(f"# {today} 新词日报\n")
     A(f"地区：全球 · 词根已查 {len(roots_state)}/526 个 · 时间窗 now 7-d, now 1-d · "
-      f"上升词 {rising_total} 条 → 候选 {len(rows)} 个 · 已复核 {len(rows)} 个 · "
+      f"上升词 {rising_total} 条 → 候选 {len(rows)} 个 · 已复核 {len(reviews)} 个 · "
       f"**新词 {new_n} 个 · 老词二次爆火 {rev_n} 个**\n")
     A("> 趋势数据是 0~100 的相对热度，不是搜索量；「vs gpts」是同一张图里最近 7 天热度的倍数。\n")
     A("> 新词只说明「刚出现」，能不能做还要看搜索量、KD 和 SERP。\n")
@@ -127,9 +165,8 @@ def main() -> int:
         A("\n|---|---|---|---|---|---|")
         for r in items:
             roots = "、".join(r.get("roots", [])[:4])
-            vs = r.get("vs_gpts")
             A(f"\n| [{r['q']}]({trends_link(r['q'])}) | {r.get('formatted') or '—'} | "
-              f"{roots} | {VERDICT_CN[r['verdict']]} | {vs if vs is not None else '—'} | {r.get('note') or ''} |")
+              f"{roots} | {VERDICT_CN[r['verdict']]} | {r['vs_gpts_display']} | {r.get('note') or ''} |")
         A("\n")
 
     table("高涨幅上升词（≥1000% 或飙升）", high)
