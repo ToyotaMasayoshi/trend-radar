@@ -26,6 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from collect import build_candidates, is_entertainment, normalize
+from cluster import tag_candidate
 
 STATE_FILE = ROOT / "state" / "state.json"
 CLUSTERS_FILE = ROOT / "state" / "clusters.json"
@@ -66,6 +67,7 @@ def apply_policy(item: dict, reviewed: bool) -> dict:
         row["note"] = ("娱乐性信息，按方法论列入观察；趋势复核结论："
                        + VERDICT_CN.get(trend_verdict, "尚未复核"))
     row["vs_gpts_display"] = format_vs_gpts(row.get("vs_gpts"))
+    row.update(tag_candidate(row, reviewed))
     return row
 
 
@@ -123,7 +125,10 @@ def main() -> int:
             "ranking_rule": "growth descending; optional relative-volume sort uses 7d vs gpts",
             "volume_boundary": "vs gpts is a same-chart relative proxy, not absolute search volume",
             "cluster_rule": "shared source root + distinctive token; subset/Jaccard are supporting evidence",
-            "low_signal_rule": "growth <500%, not Breakout, no source evidence, fewer than 2 roots",
+            "relation_rule": "raw Trends hits are audited separately; only token/entity-matched roots count",
+            "intent_rule": "local/navigation noise cannot bypass relevance through Breakout",
+            "review_rule": "unreviewed related queries stay in watch or low-signal tiers",
+            "low_signal_rule": "growth <500%, not Breakout, no source evidence, fewer than 2 relevant roots",
         },
         "stats": {
             "roots_total": 526,
@@ -150,6 +155,13 @@ def main() -> int:
              "vs_gpts_display": r.get("vs_gpts_display"),
              "vs_gpts_points": r.get("vs_gpts_points"),
              "reviewed": r.get("reviewed"), "entertainment": r.get("entertainment"),
+             "raw_source_root_count": r.get("raw_source_root_count", len(r.get("roots", []))),
+             "relevant_roots": r.get("relevant_roots", []),
+             "relevant_root_count": r.get("relevant_root_count", 0),
+             "relation_status": r.get("relation_status"),
+             "search_intent": r.get("search_intent"),
+             "review_status": r.get("review_status"),
+             "market_status": r.get("market_status"),
              "trend_verdict": r.get("trend_verdict"),
              "recent_to_baseline": r.get("recent_to_baseline"),
              "note": r.get("note"),
@@ -179,12 +191,14 @@ def main() -> int:
 
     def table(title: str, items: list) -> None:
         A(f"\n## {title}（共 {len(items)} 个）\n")
-        A("\n| 上升词 | 涨幅 | 来源词根 | 复核结论 | 近7天 vs gpts | 备注 |")
-        A("\n|---|---|---|---|---|---|")
+        A("\n| 上升词 | 涨幅 | 采集/有效词根 | 搜索意图 | 关联状态 | 复核结论 | 近7天 vs gpts | 备注 |")
+        A("\n|---|---|---|---|---|---|---|---|")
         for r in items:
             roots = "、".join(r.get("roots", [])[:4])
             A(f"\n| [{r['q']}]({trends_link(r['q'])}) | {r.get('formatted') or '—'} | "
-              f"{roots} | {VERDICT_CN[r['verdict']]} | {r['vs_gpts_display']} | {r.get('note') or ''} |")
+              f"{len(r.get('roots', []))}/{r.get('relevant_root_count', 0)} | "
+              f"{r.get('search_intent')} | {r.get('relation_status')} | "
+              f"{VERDICT_CN[r['verdict']]} | {r['vs_gpts_display']} | {r.get('note') or ''} |")
         A("\n")
 
     table("高涨幅上升词（≥1000% 或飙升）", high)
@@ -203,12 +217,14 @@ def main() -> int:
 
     def cluster_table(title: str, items: list) -> None:
         A(f"\n## {title}（共 {len(items)} 个）\n")
-        A("\n| 事件 | 展示词 | 变体数 | 峰值 | 来源词根数 | 首次/最后活跃 |")
-        A("\n|---|---|---|---|---|---|")
+        A("\n| 事件 | 展示词 | 变体数 | 峰值 | 采集/有效词根 | 搜索意图 | 关联 | 首次/最后活跃 |")
+        A("\n|---|---|---|---|---|---|---|---|")
         for c in items:
             rise = "飙升" if c.get("breakout") else f"+{c.get('max_growth') or 0}%"
             A(f"\n| {c['canonical_term']} | {c['display_term']} | {c['variant_count']} | {rise} | "
-              f"{c['source_root_count']} | {c['first_seen_date']} / {c['last_active_date']} |")
+              f"{c.get('raw_source_root_count', 0)}/{c.get('relevant_root_count', 0)} | "
+              f"{','.join(c.get('search_intents', []))} | {c.get('relation_status')} | "
+              f"{c['first_seen_date']} / {c['last_active_date']} |")
         A("\n")
 
     cluster_table("主榜事件", main_clusters)

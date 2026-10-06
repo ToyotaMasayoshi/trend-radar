@@ -14,7 +14,7 @@ from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from collect import build_candidates, classify, collect_roots, is_entertainment, normalize, review_candidates
-from cluster import build_clusters, HYPOTHESES
+from cluster import build_clusters, HYPOTHESES, tag_candidate
 from trends import RateLimited, TrendsClient
 import report
 
@@ -146,6 +146,29 @@ def test_cluster_distinctive_single_and_false_merge():
     check("cluster: distinctive single token can be center", chuttamalle["variant_count"] == 2)
     check("cluster: generic phrase does not merge brands",
           sum("text to speech" in c["canonical_term"] for c in clusters) == 2)
+
+
+def test_relevance_and_intent_tags():
+    pizza = tag_candidate({"q": "best pizza near me", "roots": ["ai art", "ai avatar"]}, False)
+    photo = tag_candidate({"q": "photosynthesis coloring page", "roots": ["ai coloring page"]}, False)
+    check("tags: unrelated local query has no valid roots",
+          pizza["search_intent"] == "local_commercial"
+          and pizza["relation_status"] == "behavioral_unverified"
+          and pizza["relevant_root_count"] == 0)
+    check("tags: category extension keeps matching root",
+          photo["search_intent"] == "educational_content"
+          and photo["relation_status"] == "direct"
+          and photo["relevant_roots"] == ["ai coloring page"])
+    clusters = build_clusters([
+        {"q": "best pizza near me", "roots": ["ai art"], "breakout": True},
+        {"q": "photosynthesis coloring page", "roots": ["ai coloring page"], "breakout": True},
+    ], today="2026-10-06")
+    by_name = {c["canonical_term"]: c for c in clusters}
+    check("tags: unrelated local Breakout cannot enter main",
+          by_name["best pizza near me"]["tier"] == "low_signal")
+    check("tags: relevant pending term stays in watch",
+          by_name["photosynthesis coloring page"]["tier"] == "watch"
+          and by_name["photosynthesis coloring page"]["stage"] == "S1")
 
 
 def test_cluster_history_stable_id():
