@@ -6,7 +6,7 @@
   "github-radar:2026-10-06"
  ],
  "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 542,
+ "count": 541,
  "roots": [
   "ai",
   "ai generator",
@@ -548,7 +548,6 @@
   "picsart ai avatar maker",
   "pope leo ai art",
   "pope ai art",
-  "pewdiepie ai model",
   "dots ai agent"
  ],
  "root_sources": {
@@ -1092,7 +1091,6 @@
   "picsart ai avatar maker": "feedback",
   "pope leo ai art": "feedback",
   "pope ai art": "feedback",
-  "pewdiepie ai model": "feedback",
   "dots ai agent": "feedback"
  },
  "root_added_at": {
@@ -1636,8 +1634,10 @@
   "picsart ai avatar maker": "2026-10-06",
   "pope leo ai art": "2026-10-06",
   "pope ai art": "2026-10-06",
-  "pewdiepie ai model": "2026-10-06",
   "dots ai agent": "2026-10-06"
  },
- "marks": {}
+ "marks": {},
+ "root_blocklist": [
+  "pewdiepie ai model"
+ ]
 }
