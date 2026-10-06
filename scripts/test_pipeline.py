@@ -15,7 +15,7 @@ from unittest.mock import MagicMock, patch
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from collect import (build_candidates, classify, collect_roots, is_entertainment,
                      is_noise_term, normalize, review_candidates,
-                     review_eligibility, tag_candidate)
+                     review_eligibility, resolve_root_limit, tag_candidate)
 from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
 import github_radar_watch
@@ -63,6 +63,11 @@ def test_feedback_and_spread_guards():
     check("spread: query failure is visible",
           result["mesh avatar studio"]["verdict"] == "查询失败")
     check("spread: query failure is not cached", saved == {})
+
+
+def test_full_root_round():
+    check("root limit: zero means all", resolve_root_limit(0, 559) == 559)
+    check("root limit: explicit cap remains available", resolve_root_limit(12, 559) == 12)
 
 
 def test_classify_new():
