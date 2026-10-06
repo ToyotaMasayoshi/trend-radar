@@ -36,11 +36,23 @@ DAILY_JSON_URL = "https://trend-radar-eif.pages.dev/data/daily.json"
 # verdicts that feed back into the root pool (methodology: new rising combos)
 FEEDBACK_VERDICTS = {"new", "revived"}
 # noise that must never become roots (same rules as the email noise filter)
-FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io"]
+FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
+                             # AI error messages that trend as queries
+                             "i wasn't able", "i'm sorry", "as an ai",
+                             "i cannot", "unable to generate", "error on my side",
+                             "something went wrong"]
+# generic how-to / question phrases make poor roots
+FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 
 
 def _feedback_noise(q: str) -> bool:
-    return any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS)
+    if any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS):
+        return True
+    if any(q.startswith(p) for p in FEEDBACK_NOISE_PREFIXES):
+        return True
+    if len(q.split()) > 6:  # roots are short terms, not sentences
+        return True
+    return False
 
 # --- filter rules -----------------------------------------------------------
 # Pure-developer signals: repo is a lib/tool for developers, not end users.
