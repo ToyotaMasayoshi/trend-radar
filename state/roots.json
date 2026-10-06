@@ -5,8 +5,8 @@
   "2026-10-03.md",
   "github-radar:2026-10-06"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 565,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP)",
+ "count": 566,
  "roots": [
   "ai",
   "ai generator",
@@ -572,7 +572,8 @@
   "raindance ai trend",
   "trump meeting with ai leaders",
   "zombie trend",
-  "using ai as a therapist"
+  "using ai as a therapist",
+  "huashu art motion"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1139,7 +1140,8 @@
   "raindance ai trend": "feedback",
   "trump meeting with ai leaders": "feedback",
   "zombie trend": "feedback",
-  "using ai as a therapist": "feedback"
+  "using ai as a therapist": "feedback",
+  "huashu art motion": "github-radar"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1706,7 +1708,8 @@
   "raindance ai trend": "2026-10-06",
   "trump meeting with ai leaders": "2026-10-06",
   "zombie trend": "2026-10-06",
-  "using ai as a therapist": "2026-10-06"
+  "using ai as a therapist": "2026-10-06",
+  "huashu art motion": "2026-10-06"
  },
  "marks": {},
  "root_blocklist": [
