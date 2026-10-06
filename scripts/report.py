@@ -103,6 +103,26 @@ def main() -> int:
     rising_total = sum(len(rec.get("windows", {}).get(w, []))
                        for rec in roots_state.values() for w in ("now 7-d", "now 1-d"))
 
+    # -- coverage (P0): honest data-completeness annotation ------------------
+    roots_pool_file = ROOT / "state" / "roots.json"
+    try:
+        roots_total = len(json.loads(roots_pool_file.read_text(encoding="utf-8"))["roots"])
+    except Exception:
+        roots_total = 526
+    coverage_pct = round(len(roots_state) / roots_total * 100, 1) if roots_total else 0.0
+    data_complete = coverage_pct >= 50 and not meta.get("rate_limited", False)
+
+    # -- spread verification (P1): HN as social-discussion evidence ---------
+    spread: dict[str, dict] = {}
+    try:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from verify_spread import verify_terms
+        top_terms = [r["q"] for r in
+                     sorted(rows, key=lambda r: r.get("growth") or 0, reverse=True)[:30]]
+        spread = verify_terms(top_terms, limit=30)
+    except Exception:
+        spread = {}
+
     # -- daily.json -------------------------------------------------------
     main_clusters = [c for c in clusters if c.get("tier") == "main"]
     watch_clusters = [c for c in clusters if c.get("tier") == "watch"]
@@ -131,8 +151,10 @@ def main() -> int:
             "low_signal_rule": "growth <500%, not Breakout, no source evidence, fewer than 2 relevant roots",
         },
         "stats": {
-            "roots_total": 526,
+            "roots_total": roots_total,
             "roots_cached": len(roots_state),
+            "coverage_pct": coverage_pct,
+            "data_complete": data_complete,
             "rising_terms": rising_total,
             "candidates": len(rows),
             "reviewed": len(reviews),
@@ -165,6 +187,7 @@ def main() -> int:
              "trend_verdict": r.get("trend_verdict"),
              "recent_to_baseline": r.get("recent_to_baseline"),
              "note": r.get("note"),
+             "spread": spread.get(r["q"], {"verdict": "未验证"}),
              "yearly_12m": r.get("yearly", []), "daily_30d": r.get("monthly_30d", [])}
             for r in rows
         ],
@@ -183,22 +206,27 @@ def main() -> int:
     new_n = len(by_verdict.get("new", []))
     rev_n = len(by_verdict.get("revived", []))
     A(f"# {today} 新词日报\n")
-    A(f"地区：全球 · 词根已查 {len(roots_state)}/526 个 · 时间窗 now 7-d, now 1-d · "
-      f"上升词 {rising_total} 条 → 候选 {len(rows)} 个 · 已复核 {len(reviews)} 个 · "
-      f"**新词 {new_n} 个 · 老词二次爆火 {rev_n} 个**\n")
+    coverage_note = ("本轮覆盖率 %.1f%%（数据完整）" % coverage_pct if data_complete
+                     else "**本轮覆盖率 %.1f%%，数据不全，以下结论基于部分数据**" % coverage_pct)
+    A(f"地区：全球 · 词根已查 {len(roots_state)}/{roots_total} 个 · {coverage_note} · "
+      f"时间窗 now 7-d, now 1-d · 上升词 {rising_total} 条 → 候选 {len(rows)} 个 · "
+      f"已复核 {len(reviews)} 个 · **新词 {new_n} 个 · 老词二次爆火 {rev_n} 个**\n")
     A("> 趋势数据是 0~100 的相对热度，不是搜索量；「vs gpts」是同一张图里最近 7 天热度的倍数。\n")
     A("> 新词只说明「刚出现」，能不能做还要看搜索量、KD 和 SERP。\n")
 
     def table(title: str, items: list) -> None:
         A(f"\n## {title}（共 {len(items)} 个）\n")
-        A("\n| 上升词 | 涨幅 | 采集/有效词根 | 搜索意图 | 关联状态 | 复核结论 | 近7天 vs gpts | 备注 |")
-        A("\n|---|---|---|---|---|---|---|---|")
+        A("\n| 上升词 | 涨幅 | 采集/有效词根 | 搜索意图 | 关联状态 | 复核结论 | 近7天 vs gpts | 传播证据 | 备注 |")
+        A("\n|---|---|---|---|---|---|---|---|---|")
         for r in items:
             roots = "、".join(r.get("roots", [])[:4])
+            sp = spread.get(r["q"], {})
+            sp_txt = ("—" if sp.get("verdict") in (None, "未验证")
+                      else f"{sp['verdict']}（HN {sp.get('hn_hits', 0)}）")
             A(f"\n| [{r['q']}]({trends_link(r['q'])}) | {r.get('formatted') or '—'} | "
               f"{len(r.get('roots', []))}/{r.get('relevant_root_count', 0)} | "
               f"{r.get('search_intent')} | {r.get('relation_status')} | "
-              f"{VERDICT_CN[r['verdict']]} | {r['vs_gpts_display']} | {r.get('note') or ''} |")
+              f"{VERDICT_CN[r['verdict']]} | {r['vs_gpts_display']} | {sp_txt} | {r.get('note') or ''} |")
         A("\n")
 
     table("高涨幅上升词（≥1000% 或飙升）", high)
@@ -247,6 +275,8 @@ def main() -> int:
     A("\n- `now 7-d` / `now 1-d` 为滚动窗口；历史回放与采集当时不一定是同一快照。")
     A("\n- vs gpts 为同图相对倍数。短时尖峰须由 30 天日线直接证明，证据不足只标待观察。")
     A("\n- 假设类字段（如 AI 发现/推荐机制）为运行假设，标注为 hypothesis，不作为已确认事实。\n")
+    A("\n- 传播证据来自 Hacker News 公开故事搜索（免费 Algolia API），仅覆盖英文技术社区讨论；"
+      "「未观测到」不等于没有传播。\n")
 
     out_md = ROOT / "reports" / f"{today}.md"
     out_md.parent.mkdir(parents=True, exist_ok=True)
