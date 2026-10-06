@@ -216,6 +216,7 @@ def main() -> int:
     store = load_roots(roots_path)
     existing = {norm(r) for r in store["roots"]}
     new_roots: list[str] = []
+    radar_added: list[str] = []
     for p in passed:
         # re-fetch fullName -> root term
         for repo in top:
@@ -223,14 +224,24 @@ def main() -> int:
                 for rt in repo_to_roots(repo):
                     if norm(rt) not in existing:
                         new_roots.append(rt)
+                        radar_added.append(rt)
                         existing.add(norm(rt))
     # P1: feedback loop — new/revived terms from the daily report become roots
     feedback_added = feedback_roots(store, existing)
     summary["feedback_added"] = feedback_added
     new_roots.extend(feedback_added)
     if new_roots:
+        today = datetime.now(timezone.utc).date().isoformat()
         store["roots"].extend(new_roots)
         store["count"] = len(store["roots"])
+        sources = store.setdefault("root_sources", {})
+        added_at = store.setdefault("root_added_at", {})
+        for rt in radar_added:
+            sources[rt] = "github-radar"
+            added_at[rt] = today
+        for rt in feedback_added:
+            sources[rt] = "feedback"
+            added_at[rt] = today
         src = f"github-radar:{datetime.now(timezone.utc).date().isoformat()}"
         if src not in store["source"]:
             store["source"].append(src)
