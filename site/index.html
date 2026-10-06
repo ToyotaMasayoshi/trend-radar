@@ -13,36 +13,43 @@ th{background:#f5f5f5}.tag{display:inline-block;padding:1px 8px;border-radius:10
 .new{background:#2a9d48}.revived{background:#d97b1a}.spike{background:#8a63d2}.watch{background:#888}.pending{background:#4d6b8a}
 #filters button{margin:2px;padding:4px 10px;cursor:pointer}
 #sort{margin:2px 0 8px;padding:4px 8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.card{border:1px solid #ddd;border-radius:8px;padding:10px;background:#fff}.card summary{cursor:pointer;font-weight:600}
+.metric{font-size:12px;color:#555;margin:6px 0}.tier{float:right;font-size:11px;color:#666}
 .note{color:#666;font-size:12px}
 </style>
 </head>
 <body>
 <h1>Trend Radar 新词日报</h1>
 <p class="note" id="meta">加载中…</p>
+<h2>今日 Top 5</h2><ol id="top5"></ol>
+<h2>主榜事件</h2><div class="cards" id="main"></div>
+<h2>娱乐 / 观察</h2><div class="cards" id="watch"></div>
+<details><summary>低信号附录</summary><div class="cards" id="low_signal"></div></details>
+<details><summary>查看全部候选词</summary>
 <div id="filters">
 <button data-v="all">全部</button><button data-v="new">新词</button><button data-v="revived">二次爆火</button><button data-v="spike">短时尖峰</button><button data-v="watch">待观察</button><button data-v="pending">待复核</button>
 </div>
 <label>排序：<select id="sort"><option value="growth">涨幅（高→低）</option><option value="volume">相对搜索量（vs gpts，高→低）</option></select></label>
 <h2>候选词</h2>
 <table id="tbl"><thead><tr><th>词</th><th>结论</th><th>涨幅</th><th>来源词根</th><th>vs gpts</th><th>备注</th></tr></thead><tbody></tbody></table>
-<h2>事件簇</h2>
-<table id="ctbl"><thead><tr><th>事件</th><th>变体</th><th>阶段</th><th>假设状态</th></tr></thead><tbody></tbody></table>
+</details>
 <p class="note">娱乐性信息固定进入待观察。搜索量排序使用同图 7 天 vs gpts 相对倍数，不是绝对月搜索量。假设类字段为运行假设（hypothesis），非已确认事实。</p>
 <script>
 const CN={new:"新词",revived:"老词二次爆火",spike:"短时尖峰",watch:"待观察",pending:"待复核"};
 let C=[],V="all";
+const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 fetch("data/daily.json").then(r=>r.json()).then(d=>{
   document.getElementById("meta").textContent=
-    `更新：${d.updated_at} · 词根 ${d.stats.roots_cached}/${d.stats.roots_total} · 候选 ${d.stats.candidates} · 请求 ${d.stats.requests}${d.stats.rate_limited?" · 本轮遇到429":""}`;
+    `更新：${d.updated_at} · 词根 ${d.stats.roots_cached}/${d.stats.roots_total} · 候选 ${d.stats.candidates} · 事件 ${d.stats.active_clusters} · 去重率 ${(d.stats.dedup_rate*100).toFixed(1)}% · 低信号 ${d.stats.low_signal_clusters} · 请求 ${d.stats.requests}${d.stats.rate_limited?" · 429重试后仍受限":""}`;
   C=d.candidates;
   render("all");
-  const cb=document.querySelector("#ctbl tbody");
-  d.clusters.forEach(c=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${c.canonical_term}</td><td>${c.variants.map(v=>v.term).join("、")}</td><td>${c.stage}</td><td>${Object.entries(c.hypotheses).map(([k,v])=>k+":"+v).join("<br>")}</td>`;
-    cb.appendChild(tr);
-  });
+  document.getElementById("top5").innerHTML=(d.top5||[]).map(c=>`<li><b>${esc(c.cluster_name)}</b>：${c.breakout?"飙升":"+"+(c.growth||0)+"%"}，${c.roots} 个来源词根</li>`).join("");
+  ["main","watch","low_signal"].forEach(tier=>renderClusters(d.clusters.filter(c=>c.tier===tier),tier));
 });
+function renderClusters(items,id){
+  document.getElementById(id).innerHTML=items.map(c=>`<details class="card"><summary>${esc(c.canonical_term)} <span class="tier">${esc(c.stage)}</span></summary><div class="metric">展示词：${esc(c.display_term)} · 峰值：${c.breakout?"飙升":"+"+(c.max_growth||0)+"%"} · 变体 ${c.variant_count} · 词根 ${c.source_root_count}</div><div class="metric">${esc(c.first_seen_date)} → ${esc(c.last_active_date)}${c.entertainment?" · 娱乐":""}</div><div>${c.variants.map(v=>esc(v.term)).join("、")}</div></details>`).join("")||'<p class="note">暂无</p>';
+}
 function render(v){
   V=v;
   const tb=document.querySelector("#tbl tbody");tb.innerHTML="";
@@ -51,7 +58,7 @@ function render(v){
     :(c.breakout?Number.MAX_VALUE:(Number.isFinite(c.growth)?c.growth:-1));
   C.filter(c=>v==="all"||c.verdict===v).sort((a,b)=>score(b)-score(a)||a.q.localeCompare(b.q)).forEach(c=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td><a href="https://trends.google.com/trends/explore?date=now%207-d&q=${encodeURIComponent(c.q)}" target="_blank" rel="noopener">${c.q}</a></td><td><span class="tag ${c.verdict}">${CN[c.verdict]}</span></td><td>${c.formatted||"—"}</td><td>${(c.roots||[]).join("、")}</td><td>${c.vs_gpts_display||"—"}</td><td>${c.note||""}</td>`;
+    tr.innerHTML=`<td><a href="https://trends.google.com/trends/explore?date=now%207-d&q=${encodeURIComponent(c.q)}" target="_blank" rel="noopener">${esc(c.q)}</a></td><td><span class="tag ${esc(c.verdict)}">${esc(CN[c.verdict])}</span></td><td>${esc(c.formatted||"—")}</td><td>${esc((c.roots||[]).join("、"))}</td><td>${esc(c.vs_gpts_display||"—")}</td><td>${esc(c.note||"")}</td>`;
     tb.appendChild(tr);
   });
 }

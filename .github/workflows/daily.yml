@@ -23,14 +23,14 @@ jobs:
           restore-keys: trend-radar-state-
       - run: python3 -B scripts/test_pipeline.py
       - run: python3 -B scripts/collect.py
-      - name: Save collection state
+      - run: python3 -B scripts/cluster.py
+      - run: python3 -B scripts/report.py
+      - name: Save collection and cluster history
         if: always() && hashFiles('state/state.json') != ''
         uses: actions/cache/save@v4
         with:
           path: state/state.json
           key: trend-radar-state-${{ github.run_id }}
-      - run: python3 -B scripts/cluster.py
-      - run: python3 -B scripts/report.py
       - uses: actions/setup-node@v4
         with:
           node-version: 20

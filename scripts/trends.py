@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import http.cookiejar
 import json
+import random
 import re
 import time
 import urllib.error
@@ -23,6 +24,7 @@ import urllib.request
 
 BASE = "https://trends.google.com/trends/api/"
 REQUEST_DELAY = 2.0  # seconds between requests; pacing, not evasion
+MAX_RETRIES = 2
 
 
 class RateLimited(RuntimeError):
@@ -36,22 +38,37 @@ def _google_json(payload: bytes) -> dict:
 
 
 class TrendsClient:
-    def __init__(self, delay: float = REQUEST_DELAY) -> None:
+    def __init__(self, delay: float = REQUEST_DELAY, retries: int = MAX_RETRIES) -> None:
         jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
         self.delay = delay
-        self.requests = 1
+        self.retries = retries
+        self.requests = 0
         request = urllib.request.Request("https://www.google.com/", headers={
             "User-Agent": "Mozilla/5.0 (compatible; TrendRadar/1.0)",
             "Accept-Language": "en-US,en;q=0.9",
         })
-        try:
-            with self.opener.open(request, timeout=25) as response:
-                response.read(1)
-        except urllib.error.HTTPError as error:
-            if error.code == 429:
-                raise RateLimited("Google session returned HTTP 429") from error
-            raise
+        self._read(request, "Google session")
+
+    def _read(self, request: urllib.request.Request, label: str) -> bytes:
+        """Read once, with bounded 429 retries that respect Retry-After."""
+        for attempt in range(self.retries + 1):
+            self.requests += 1
+            try:
+                with self.opener.open(request, timeout=25) as response:
+                    return response.read()
+            except urllib.error.HTTPError as error:
+                if error.code != 429:
+                    raise
+                if attempt >= self.retries:
+                    raise RateLimited(f"{label} returned HTTP 429") from error
+                retry_after = error.headers.get("Retry-After") if error.headers else None
+                try:
+                    wait = float(retry_after)
+                except (TypeError, ValueError):
+                    wait = 4 * (2 ** attempt) + random.uniform(0.2, 1.0)
+                time.sleep(min(60, max(1, wait)))
+        raise AssertionError("unreachable")
 
     def get(self, path: str, params: dict) -> dict:
         url = BASE + path + "?" + urllib.parse.urlencode(params)
@@ -60,14 +77,7 @@ class TrendsClient:
             "Accept-Language": "en-US,en;q=0.9",
             "Referer": "https://trends.google.com/trends/explore",
         })
-        self.requests += 1
-        try:
-            with self.opener.open(request, timeout=25) as response:
-                result = _google_json(response.read())
-        except urllib.error.HTTPError as error:
-            if error.code == 429:
-                raise RateLimited("Google Trends returned HTTP 429") from error
-            raise
+        result = _google_json(self._read(request, "Google Trends"))
         if self.delay:
             time.sleep(self.delay)
         return result
