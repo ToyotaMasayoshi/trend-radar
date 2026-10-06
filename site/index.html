@@ -23,7 +23,7 @@ th{background:#f5f5f5}.tag{display:inline-block;padding:1px 8px;border-radius:10
 <body>
 <h1>Trend Radar 新词日报</h1>
 <p class="note" id="meta">加载中…</p>
-<h2>今日 Top 5</h2><ol id="top5"></ol>
+<h2>今日 Top 10</h2><ol id="top10"></ol>
 <h2>主榜事件</h2><div class="cards" id="main"></div>
 <h2>娱乐 / 观察</h2><div class="cards" id="watch"></div>
 <details><summary>低信号附录</summary><div class="cards" id="low_signal"></div></details>
@@ -47,7 +47,7 @@ fetch("data/daily.json").then(r=>r.json()).then(d=>{
     `更新：${d.updated_at} · 词根 ${d.stats.roots_cached}/${d.stats.roots_total} · 候选 ${d.stats.candidates} · 已复核 ${d.stats.reviewed}（${(d.stats.review_coverage*100).toFixed(1)}%） · 有效待复核 ${d.stats.eligible_pending} · 已排除 ${d.stats.excluded_from_review} · 断点窗口 ${d.stats.review_progress_windows}${d.stats.backlog_mode?" · 积压优先模式":""} · 事件 ${d.stats.active_clusters} · 请求 ${d.stats.requests}${d.stats.rate_limited?" · 429后已保存进度":""}`;
   C=d.candidates;
   render("all");
-  document.getElementById("top5").innerHTML=(d.top5||[]).map(c=>`<li><b>${esc(c.cluster_name)}</b>：${c.breakout?"飙升":"+"+(c.growth||0)+"%"}，${c.roots} 个来源词根</li>`).join("");
+  document.getElementById("top10").innerHTML=(d.top10||d.top5||[]).map(c=>`<li><b>${esc(c.cluster_name)}</b>：${c.breakout?"飙升":"+"+(c.growth||0)+"%"}，${c.roots} 个来源词根</li>`).join("");
   ["main","watch","low_signal"].forEach(tier=>renderClusters(d.clusters.filter(c=>c.tier===tier),tier));
 });
 function renderClusters(items,id){

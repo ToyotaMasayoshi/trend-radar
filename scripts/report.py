@@ -151,7 +151,7 @@ def main() -> int:
     low_clusters = [c for c in clusters if c.get("tier") == "low_signal"]
     top_clusters = sorted(main_clusters, key=lambda c: (
         not c.get("breakout"), -(c.get("max_growth") or 0),
-        -c.get("source_root_count", 0), normalize(c.get("canonical_term", ""))))[:5]
+        -c.get("source_root_count", 0), normalize(c.get("canonical_term", ""))))[:10]
     daily = {
         "updated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "source": "Google Trends Explore related rising queries and interest over time",
@@ -228,7 +228,7 @@ def main() -> int:
             for r in rows
         ],
         "clusters": clusters,
-        "top5": [{"cluster_name": c["canonical_term"], "display_term": c["display_term"],
+        "top10": [{"cluster_name": c["canonical_term"], "display_term": c["display_term"],
                   "growth": c.get("max_growth"), "breakout": c.get("breakout"),
                   "roots": c.get("source_root_count", 0)} for c in top_clusters],
     }
@@ -272,7 +272,7 @@ def main() -> int:
     table("复核后排除 / 待观察", by_verdict.get("watch", []))
     table("待复核", by_verdict.get("pending", []))
 
-    A("\n## 今日 Top 5 事件\n")
+    A("\n## 今日 Top 10 事件\n")
     for index, c in enumerate(top_clusters, 1):
         rise = "飙升" if c.get("breakout") else f"+{c.get('max_growth') or 0}%"
         A(f"\n{index}. **{c['canonical_term']}**：{rise}，{c['variant_count']} 个变体，"

@@ -351,6 +351,7 @@ def test_report_renders():
         daily = json.loads((ROOT / "site" / "data" / "daily.json").read_text(encoding="utf-8"))
         md = (ROOT / "reports").glob("*.md")
         check("report: daily.json valid", daily["stats"]["candidates"] == 2)
+        check("report: top10 exported", "top10" in daily and "top5" not in daily)
         check("report: reviewed count excludes pending", daily["stats"]["reviewed"] == 1)
         check("report: unreviewed candidates stay pending",
               any(row["q"] == "pending term" and row["verdict"] == "pending"
