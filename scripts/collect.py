@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE_FILE = ROOT / "state" / "state.json"
 
 WINDOWS = ("now 7-d", "now 1-d")
-ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "10")))
+ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "15")))
 REVIEW_REQUEST_BUDGET = max(4, int(os.getenv("REVIEW_REQUEST_BUDGET", "40")))
 BACKLOG_THRESHOLD = 50
 BACKLOG_ROOT_LIMIT = 10
