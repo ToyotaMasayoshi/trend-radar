@@ -5,8 +5,8 @@
   "2026-10-03.md",
   "github-radar:2026-10-06"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 542,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 549,
  "roots": [
   "ai",
   "ai generator",
@@ -549,7 +549,14 @@
   "pope leo ai art",
   "pope ai art",
   "dots ai agent",
-  "best ai baby generator"
+  "best ai baby generator",
+  "m4 editor",
+  "rhubarb lip sync",
+  "ai baby generator gratis",
+  "google gemini ai model updates 2026",
+  "narrative ai video editor",
+  "agent vizard ai",
+  "national girlfriend day"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1093,7 +1100,14 @@
   "pope leo ai art": "feedback",
   "pope ai art": "feedback",
   "dots ai agent": "feedback",
-  "best ai baby generator": "manual"
+  "best ai baby generator": "manual",
+  "m4 editor": "feedback",
+  "rhubarb lip sync": "feedback",
+  "ai baby generator gratis": "feedback",
+  "google gemini ai model updates 2026": "feedback",
+  "narrative ai video editor": "feedback",
+  "agent vizard ai": "feedback",
+  "national girlfriend day": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1637,7 +1651,14 @@
   "pope leo ai art": "2026-10-06",
   "pope ai art": "2026-10-06",
   "dots ai agent": "2026-10-06",
-  "best ai baby generator": "2026-10-06"
+  "best ai baby generator": "2026-10-06",
+  "m4 editor": "2026-10-06",
+  "rhubarb lip sync": "2026-10-06",
+  "ai baby generator gratis": "2026-10-06",
+  "google gemini ai model updates 2026": "2026-10-06",
+  "narrative ai video editor": "2026-10-06",
+  "agent vizard ai": "2026-10-06",
+  "national girlfriend day": "2026-10-06"
  },
  "marks": {},
  "root_blocklist": [
