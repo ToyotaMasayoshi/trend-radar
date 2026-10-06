@@ -1,0 +1,27 @@
+name: Deploy radar scheduler
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Deploy scheduler
+        run: npx -y wrangler deploy --config scheduler/wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Store dispatch token in Cloudflare
+        run: echo "$RADAR_DISPATCH_TOKEN" | npx -y wrangler secret put GH_DISPATCH_TOKEN --config scheduler/wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          RADAR_DISPATCH_TOKEN: ${{ secrets.RADAR_DISPATCH_TOKEN }}

@@ -1,0 +1,7 @@
+name = "trend-radar-scheduler"
+main = "worker.js"
+compatibility_date = "2026-10-07"
+workers_dev = false
+
+[triggers]
+crons = ["7,22,37,52 * * * *"]
