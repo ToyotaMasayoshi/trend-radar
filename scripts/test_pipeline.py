@@ -14,10 +14,13 @@ from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from collect import (build_candidates, classify, collect_roots, is_entertainment,
-                     normalize, review_candidates, review_eligibility, tag_candidate)
+                     is_noise_term, normalize, review_candidates,
+                     review_eligibility, tag_candidate)
 from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
+import github_radar_watch
 import report
+import verify_spread
 
 ROOT = Path(__file__).resolve().parents[1]
 PASS = []
@@ -30,6 +33,36 @@ def check(name: str, cond: bool) -> None:
 
 def pts(values: list) -> list:
     return [{"time": f"t{i}", "value": v} for i, v in enumerate(values)]
+
+
+def test_feedback_and_spread_guards():
+    check("noise: normalized local query", is_noise_term("best-pizza-near-me"))
+    check("noise: domain query", is_noise_term("america.gov ai chatbot"))
+    check("noise: sentence query",
+          is_noise_term("i wasn't able to generate the image due to an error on my side."))
+    check("noise: question query", is_noise_term("how long should a cover letter be"))
+    check("noise: valid term kept", not is_noise_term("mesh avatar studio"))
+
+    daily = {"candidates": [
+        {"q": "mesh avatar studio", "verdict": "new"},
+        {"q": "best pizza near me", "verdict": "revived"},
+        {"q": "america.gov", "verdict": "new"},
+        {"q": "ignored watch", "verdict": "watch"},
+    ]}
+    response = MagicMock()
+    response.__enter__.return_value.read.return_value = json.dumps(daily).encode()
+    with patch.object(github_radar_watch.urllib.request, "urlopen", return_value=response):
+        added = github_radar_watch.feedback_roots(set())
+    check("feedback: only clean new/revived roots", added == ["mesh avatar studio"])
+
+    saved = {}
+    with patch.object(verify_spread, "_load_cache", return_value={}), \
+            patch.object(verify_spread, "_query_hn", side_effect=OSError("offline")), \
+            patch.object(verify_spread, "_save_cache", side_effect=lambda cache: saved.update(cache)):
+        result = verify_spread.verify_terms(["mesh avatar studio"])
+    check("spread: query failure is visible",
+          result["mesh avatar studio"]["verdict"] == "查询失败")
+    check("spread: query failure is not cached", saved == {})
 
 
 def test_classify_new():

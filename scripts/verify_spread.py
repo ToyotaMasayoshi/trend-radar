@@ -105,7 +105,9 @@ def verify_terms(terms: list[str], limit: int = 30) -> dict[str, dict]:
                 res = _query_hn(t)
             except Exception:
                 res = {"hn_hits": 0, "top_points": 0, "top_title": None,
-                       "top_url": None, "earliest": None, "verdict": "未观测到"}
+                       "top_url": None, "earliest": None, "verdict": "查询失败"}
+                results[t] = res
+                continue
             cache[t] = {"checked_at": datetime.now(timezone.utc).isoformat()
                         .replace("+00:00", "Z"), "result": res}
             results[t] = res

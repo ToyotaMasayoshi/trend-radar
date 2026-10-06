@@ -22,10 +22,13 @@ jobs:
       - name: Restore collection state
         uses: actions/cache/restore@v4
         with:
-          path: state/state.json
+          path: |
+            state/state.json
+            state/roots.json
           key: trend-radar-state-${{ github.run_id }}
           restore-keys: trend-radar-state-
       - run: python3 -B scripts/test_pipeline.py
+      - run: python3 -B scripts/github_radar_watch.py
       - run: python3 -B scripts/collect.py
       - run: python3 -B scripts/cluster.py
       - run: python3 -B scripts/report.py
@@ -33,7 +36,9 @@ jobs:
         if: always() && hashFiles('state/state.json') != ''
         uses: actions/cache/save@v4
         with:
-          path: state/state.json
+          path: |
+            state/state.json
+            state/roots.json
           key: trend-radar-state-${{ github.run_id }}
       - uses: actions/setup-node@v4
         with:

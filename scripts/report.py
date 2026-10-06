@@ -25,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from collect import (build_candidates, is_entertainment, normalize,
+from collect import (build_candidates, is_entertainment, is_noise_term, normalize,
                      review_eligibility, tag_candidate)
 
 STATE_FILE = ROOT / "state" / "state.json"
@@ -123,8 +123,9 @@ def main() -> int:
     try:
         sys.path.insert(0, str(ROOT / "scripts"))
         from verify_spread import verify_terms
-        top_terms = [r["q"] for r in
-                     sorted(rows, key=lambda r: r.get("growth") or 0, reverse=True)[:30]]
+        top_terms = [r["q"] for r in sorted(
+            (r for r in rows if not is_noise_term(r["q"])),
+            key=lambda r: r.get("growth") or 0, reverse=True)[:30]]
         spread = verify_terms(top_terms, limit=30)
     except Exception:
         spread = {}

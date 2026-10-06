@@ -30,30 +30,13 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+from collect import is_noise_term
+
 ROOT = Path(__file__).resolve().parent.parent
 RADAR_API = "https://github-rising-radar.sgaggjhkjh.workers.dev/api/data"
 DAILY_JSON_URL = "https://trend-radar-eif.pages.dev/data/daily.json"
 # verdicts that feed back into the root pool (methodology: new rising combos)
 FEEDBACK_VERDICTS = {"new", "revived"}
-# noise that must never become roots (same rules as the email noise filter)
-FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
-                             # AI error messages that trend as queries
-                             "i wasn't able", "i'm sorry", "as an ai",
-                             "i cannot", "unable to generate", "error on my side",
-                             "something went wrong"]
-# generic how-to / question phrases make poor roots
-FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
-
-
-def _feedback_noise(q: str) -> bool:
-    if any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS):
-        return True
-    if any(q.startswith(p) for p in FEEDBACK_NOISE_PREFIXES):
-        return True
-    if len(q.split()) > 6:  # roots are short terms, not sentences
-        return True
-    return False
-
 # --- filter rules -----------------------------------------------------------
 # Pure-developer signals: repo is a lib/tool for developers, not end users.
 DEV_BLACKLIST = [
@@ -151,7 +134,7 @@ def push_roots(path: Path, message: str) -> bool:
     return True
 
 
-def feedback_roots(store: dict, existing: set[str]) -> list[str]:
+def feedback_roots(existing: set[str]) -> list[str]:
     """P1: feed new/revived terms from the daily report back into the root pool.
 
     Methodology loop: newly discovered rising combos become tomorrow's roots.
@@ -168,7 +151,7 @@ def feedback_roots(store: dict, existing: set[str]) -> list[str]:
             if c.get("verdict") not in FEEDBACK_VERDICTS:
                 continue
             q = norm(c.get("q", ""))
-            if not q or len(q) < 2 or _feedback_noise(q):
+            if len(q) < 2 or is_noise_term(q):
                 continue
             if q not in existing:
                 added.append(q)
@@ -189,12 +172,17 @@ def main() -> int:
         "fetched": 0, "passed": [], "review": [], "skipped": 0, "added": [],
         "pushed": False, "error": None,
     }
+    roots_path = Path(args.roots)
+    store = load_roots(roots_path)
+    existing = {norm(r) for r in store["roots"]}
+    feedback_added = feedback_roots(existing)
+    summary["feedback_added"] = feedback_added
+
     try:
         data = fetch_radar()
     except Exception as e:  # noqa: BLE001 - never break the cron
         summary["error"] = f"fetch failed: {e}"
-        print(json.dumps(summary, ensure_ascii=False))
-        return 0
+        data = {}
 
     top = data.get("top") or []
     summary["fetched"] = len(top)
@@ -212,10 +200,7 @@ def main() -> int:
     summary["passed"] = passed
     summary["review"] = review
 
-    roots_path = Path(args.roots)
-    store = load_roots(roots_path)
-    existing = {norm(r) for r in store["roots"]}
-    new_roots: list[str] = []
+    new_roots: list[str] = list(feedback_added)
     radar_added: list[str] = []
     for p in passed:
         # re-fetch fullName -> root term
@@ -226,10 +211,6 @@ def main() -> int:
                         new_roots.append(rt)
                         radar_added.append(rt)
                         existing.add(norm(rt))
-    # P1: feedback loop — new/revived terms from the daily report become roots
-    feedback_added = feedback_roots(store, existing)
-    summary["feedback_added"] = feedback_added
-    new_roots.extend(feedback_added)
     if new_roots:
         today = datetime.now(timezone.utc).date().isoformat()
         store["roots"].extend(new_roots)

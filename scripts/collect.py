@@ -64,6 +64,10 @@ COMMON = {
 NAVIGATION = {"download", "login", "official", "website", "官网", "下载", "登录"}
 RELATION_STOP = COMMON | {"page", "site", "near", "me"}
 LOCAL_INTENT = ("near me", "open now", "closest", "附近", "就近")
+DOMAIN_NOISE = re.compile(r"(?:https?://|www\.|\.(?:com|gov|org|net|io)(?:\b|/))", re.I)
+ERROR_NOISE = ("i wasn't able", "i'm sorry", "as an ai", "i cannot",
+               "unable to generate", "error on my side", "something went wrong")
+QUESTION_NOISE = ("how ", "what ", "why ", "when ", "where ", "which ")
 EDUCATION_INTENT = {"coloring", "worksheet", "lesson", "quiz", "printable", "教材", "练习题", "涂色"}
 TOOL_INTENT = {"generator", "converter", "editor", "maker", "api", "app", "tool", "platform", "生成器", "转换器", "编辑器", "工具"}
 INFO_INTENT = {"how", "what", "why", "guide", "tutorial", "教程", "怎么", "什么", "为什么"}
@@ -85,6 +89,16 @@ def normalize(value: str) -> str:
 
 def token_set(text: str) -> set[str]:
     return set(re.findall(r"[a-z0-9\u4e00-\u9fff]+", normalize(text)))
+
+
+def is_noise_term(term: str) -> bool:
+    """Reject terms that should consume neither review nor feedback slots."""
+    raw = unicodedata.normalize("NFKC", term or "").casefold()
+    normalized = normalize(raw)
+    tokens = token_set(raw)
+    return (not tokens or any(marker in normalized for marker in LOCAL_INTENT + ERROR_NOISE)
+            or normalized.startswith(QUESTION_NOISE) or bool(tokens & NAVIGATION)
+            or bool(DOMAIN_NOISE.search(raw)) or len(tokens) > 6)
 
 
 def is_entertainment(term: str, roots: list[str]) -> bool:
@@ -134,6 +148,8 @@ def tag_candidate(item: dict, reviewed: bool | None = None) -> dict:
 
 def review_eligibility(item: dict) -> tuple[bool, str]:
     """Keep generic noise out while preserving short high-rise coined terms."""
+    if is_noise_term(item.get("q", "")):
+        return False, "noise"
     tags = tag_candidate(item, False)
     if is_entertainment(item.get("q", ""), []):
         return False, "entertainment"
