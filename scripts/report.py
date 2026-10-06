@@ -129,6 +129,21 @@ def main() -> int:
     except Exception:
         spread = {}
 
+    # -- root source distribution + marks (for origin comparison) ------------
+    roots_pool = {}
+    try:
+        roots_pool = json.loads(roots_pool_file.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    by_source: dict[str, int] = {}
+    for _t, _s in (roots_pool.get("root_sources") or {}).items():
+        by_source[_s] = by_source.get(_s, 0) + 1
+    by_mark: dict[str, int] = {}
+    for _t, _m in (roots_pool.get("marks") or {}).items():
+        _st = _m.get("status")
+        if _st:
+            by_mark[_st] = by_mark.get(_st, 0) + 1
+
     # -- daily.json -------------------------------------------------------
     main_clusters = [c for c in clusters if c.get("tier") == "main"]
     watch_clusters = [c for c in clusters if c.get("tier") == "watch"]
@@ -163,6 +178,8 @@ def main() -> int:
             "roots_cached": len(roots_state),
             "coverage_pct": coverage_pct,
             "data_complete": data_complete,
+            "roots_by_source": by_source,
+            "roots_marked": by_mark,
             "rising_terms": rising_total,
             "candidates": len(rows),
             "reviewed": len(reviews),
