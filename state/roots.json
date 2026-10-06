@@ -5,8 +5,8 @@
   "2026-10-03.md",
   "github-radar:2026-10-06"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 576,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 582,
  "roots": [
   "ai",
   "ai generator",
@@ -583,7 +583,13 @@
   "gemini 4 argon google ai",
   "openai model plays world of warcraft",
   "anthropic analysis of glm 5.3",
-  "hunyuan 3d 2.0"
+  "hunyuan 3d 2.0",
+  "openai dots",
+  "copilot flydubai",
+  "gpt 6 vs 6.1 sol",
+  "gpt 6 sol vs 6.1 sol",
+  "omani copilot",
+  "atlas edu"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1161,7 +1167,13 @@
   "gemini 4 argon google ai": "feedback",
   "openai model plays world of warcraft": "feedback",
   "anthropic analysis of glm 5.3": "feedback",
-  "hunyuan 3d 2.0": "feedback"
+  "hunyuan 3d 2.0": "feedback",
+  "openai dots": "feedback",
+  "copilot flydubai": "feedback",
+  "gpt 6 vs 6.1 sol": "feedback",
+  "gpt 6 sol vs 6.1 sol": "feedback",
+  "omani copilot": "feedback",
+  "atlas edu": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1739,7 +1751,13 @@
   "gemini 4 argon google ai": "2026-10-06",
   "openai model plays world of warcraft": "2026-10-06",
   "anthropic analysis of glm 5.3": "2026-10-06",
-  "hunyuan 3d 2.0": "2026-10-06"
+  "hunyuan 3d 2.0": "2026-10-06",
+  "openai dots": "2026-10-06",
+  "copilot flydubai": "2026-10-06",
+  "gpt 6 vs 6.1 sol": "2026-10-06",
+  "gpt 6 sol vs 6.1 sol": "2026-10-06",
+  "omani copilot": "2026-10-06",
+  "atlas edu": "2026-10-06"
  },
  "marks": {},
  "root_blocklist": [
