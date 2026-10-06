@@ -5,8 +5,8 @@
   "2026-10-03.md",
   "github-radar:2026-10-06"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 582,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 590,
  "roots": [
   "ai",
   "ai generator",
@@ -589,7 +589,15 @@
   "gpt 6 vs 6.1 sol",
   "gpt 6 sol vs 6.1 sol",
   "omani copilot",
-  "atlas edu"
+  "atlas edu",
+  "argos atlas",
+  "gpt 6.1 vs gpt 6",
+  "gpt 6.1 sol vs astra",
+  "copilot stabs pilot",
+  "gemma longo",
+  "pilot stabbed by copilot",
+  "leonardo.ai",
+  "kie ai grok imagine"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1173,7 +1181,15 @@
   "gpt 6 vs 6.1 sol": "feedback",
   "gpt 6 sol vs 6.1 sol": "feedback",
   "omani copilot": "feedback",
-  "atlas edu": "feedback"
+  "atlas edu": "feedback",
+  "argos atlas": "feedback",
+  "gpt 6.1 vs gpt 6": "feedback",
+  "gpt 6.1 sol vs astra": "feedback",
+  "copilot stabs pilot": "feedback",
+  "gemma longo": "feedback",
+  "pilot stabbed by copilot": "feedback",
+  "leonardo.ai": "feedback",
+  "kie ai grok imagine": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1757,7 +1773,15 @@
   "gpt 6 vs 6.1 sol": "2026-10-06",
   "gpt 6 sol vs 6.1 sol": "2026-10-06",
   "omani copilot": "2026-10-06",
-  "atlas edu": "2026-10-06"
+  "atlas edu": "2026-10-06",
+  "argos atlas": "2026-10-06",
+  "gpt 6.1 vs gpt 6": "2026-10-06",
+  "gpt 6.1 sol vs astra": "2026-10-06",
+  "copilot stabs pilot": "2026-10-06",
+  "gemma longo": "2026-10-06",
+  "pilot stabbed by copilot": "2026-10-06",
+  "leonardo.ai": "2026-10-06",
+  "kie ai grok imagine": "2026-10-06"
  },
  "marks": {},
  "root_blocklist": [
