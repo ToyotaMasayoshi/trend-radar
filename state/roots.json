@@ -6,7 +6,7 @@
   "github-radar:2026-10-06"
  ],
  "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 549,
+ "count": 548,
  "roots": [
   "ai",
   "ai generator",
@@ -555,8 +555,7 @@
   "ai baby generator gratis",
   "google gemini ai model updates 2026",
   "narrative ai video editor",
-  "agent vizard ai",
-  "national girlfriend day"
+  "agent vizard ai"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1106,8 +1105,7 @@
   "ai baby generator gratis": "feedback",
   "google gemini ai model updates 2026": "feedback",
   "narrative ai video editor": "feedback",
-  "agent vizard ai": "feedback",
-  "national girlfriend day": "feedback"
+  "agent vizard ai": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1657,11 +1655,11 @@
   "ai baby generator gratis": "2026-10-06",
   "google gemini ai model updates 2026": "2026-10-06",
   "narrative ai video editor": "2026-10-06",
-  "agent vizard ai": "2026-10-06",
-  "national girlfriend day": "2026-10-06"
+  "agent vizard ai": "2026-10-06"
  },
  "marks": {},
  "root_blocklist": [
+  "national girlfriend day",
   "pewdiepie ai model"
  ]
 }
