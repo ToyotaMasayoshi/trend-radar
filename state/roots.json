@@ -5,8 +5,8 @@
   "2026-10-03.md",
   "github-radar:2026-10-06"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 536,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 540,
  "roots": [
   "ai",
   "ai generator",
@@ -543,7 +543,11 @@
   "ai portrait generator from photo",
   "artguru ai photo enhancer",
   "openai unauthorized ai agent activity",
-  "ajax ai model"
+  "ajax ai model",
+  "adopting ai chatbot phrases",
+  "picsart ai avatar maker",
+  "pope leo ai art",
+  "pope ai art"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1081,7 +1085,11 @@
   "ai portrait generator from photo": "feedback",
   "artguru ai photo enhancer": "feedback",
   "openai unauthorized ai agent activity": "feedback",
-  "ajax ai model": "feedback"
+  "ajax ai model": "feedback",
+  "adopting ai chatbot phrases": "feedback",
+  "picsart ai avatar maker": "feedback",
+  "pope leo ai art": "feedback",
+  "pope ai art": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1619,7 +1627,11 @@
   "ai portrait generator from photo": "2026-10-06",
   "artguru ai photo enhancer": "2026-10-06",
   "openai unauthorized ai agent activity": "2026-10-06",
-  "ajax ai model": "2026-10-06"
+  "ajax ai model": "2026-10-06",
+  "adopting ai chatbot phrases": "2026-10-06",
+  "picsart ai avatar maker": "2026-10-06",
+  "pope leo ai art": "2026-10-06",
+  "pope ai art": "2026-10-06"
  },
  "marks": {}
 }
