@@ -50,6 +50,7 @@ ENTERTAINMENT_MARKERS = (
     "游戏", "歌曲", "音乐", "电影", "影视", "动漫", "明星", "演员",
     "歌手", "综艺", "足球", "篮球", "体育", "谜题", "测验",
 )
+PLURAL_EXCEPTIONS = {"news", "series", "species", "analysis", "status", "gpts"}
 
 
 def iso_now() -> str:
@@ -57,7 +58,12 @@ def iso_now() -> str:
 
 
 def normalize(value: str) -> str:
-    return " ".join(unicodedata.normalize("NFKC", value or "").casefold().split())
+    text = unicodedata.normalize("NFKC", value or "").casefold()
+    words = re.sub(r"[-_/]+", " ", text).split()
+    words = [w[:-1] if (len(w) > 4 and w.endswith("s")
+                        and not w.endswith(("ss", "us", "is"))
+                        and w not in PLURAL_EXCEPTIONS) else w for w in words]
+    return " ".join(words)
 
 
 def is_entertainment(term: str, roots: list[str]) -> bool:
@@ -196,11 +202,14 @@ def build_candidates(state: dict) -> list:
                     item["roots"].append(root)
                 if window not in item["windows"]:
                     item["windows"].append(window)
-                # keep the strongest growth seen
+                # Keep Breakout if any source saw it, plus the largest numeric rise.
+                if row["breakout"]:
+                    item["breakout"] = True
+                    item["formatted"] = "飙升"
                 if (row["growth"] or 0) > (item["growth"] or 0):
                     item["growth"] = row["growth"]
-                    item["breakout"] = row["breakout"]
-                    item["formatted"] = row["formatted"]
+                    if not item["breakout"]:
+                        item["formatted"] = row["formatted"]
     return list(seen.values())
 
 

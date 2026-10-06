@@ -79,7 +79,8 @@ def ranking_key(row: dict) -> tuple:
 
 def main() -> int:
     state = json.loads(STATE_FILE.read_text(encoding="utf-8")) if STATE_FILE.exists() else {}
-    clusters = json.loads(CLUSTERS_FILE.read_text(encoding="utf-8")) if CLUSTERS_FILE.exists() else []
+    cluster_history = json.loads(CLUSTERS_FILE.read_text(encoding="utf-8")) if CLUSTERS_FILE.exists() else []
+    clusters = [c for c in cluster_history if c.get("status", "active") == "active"]
     reviews = state.get("reviews", {})
     roots_state = state.get("roots", {})
     meta = state.get("meta", {})
@@ -95,12 +96,18 @@ def main() -> int:
     by_verdict: dict[str, list] = {}
     for r in rows:
         by_verdict.setdefault(r["verdict"], []).append(r)
-    high = [r for r in rows
-            if r.get("breakout") or (r.get("growth") or 0) >= 1000]
+    high = [r for r in rows if not r.get("entertainment") and
+            (r.get("breakout") or (r.get("growth") or 0) >= 1000)]
     rising_total = sum(len(rec.get("windows", {}).get(w, []))
                        for rec in roots_state.values() for w in ("now 7-d", "now 1-d"))
 
     # -- daily.json -------------------------------------------------------
+    main_clusters = [c for c in clusters if c.get("tier") == "main"]
+    watch_clusters = [c for c in clusters if c.get("tier") == "watch"]
+    low_clusters = [c for c in clusters if c.get("tier") == "low_signal"]
+    top_clusters = sorted(main_clusters, key=lambda c: (
+        not c.get("breakout"), -(c.get("max_growth") or 0),
+        -c.get("source_root_count", 0), normalize(c.get("canonical_term", ""))))[:5]
     daily = {
         "updated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "source": "Google Trends Explore related rising queries and interest over time",
@@ -115,6 +122,8 @@ def main() -> int:
             "entertainment_rule": "entertainment terms stay in watch regardless of trend verdict",
             "ranking_rule": "growth descending; optional relative-volume sort uses 7d vs gpts",
             "volume_boundary": "vs gpts is a same-chart relative proxy, not absolute search volume",
+            "cluster_rule": "shared source root + distinctive token; subset/Jaccard are supporting evidence",
+            "low_signal_rule": "growth <500%, not Breakout, no source evidence, fewer than 2 roots",
         },
         "stats": {
             "roots_total": 526,
@@ -126,6 +135,12 @@ def main() -> int:
             "by_verdict": {k: len(v) for k, v in by_verdict.items()},
             "requests": meta.get("requests", 0),
             "rate_limited": meta.get("rate_limited", False),
+            "active_clusters": len(clusters),
+            "archived_clusters": sum(c.get("status") == "archived" for c in cluster_history),
+            "dedup_rate": round(1 - len(clusters) / len(rows), 4) if rows else 0,
+            "main_clusters": len(main_clusters),
+            "watch_clusters": len(watch_clusters),
+            "low_signal_clusters": len(low_clusters),
         },
         "candidates": [
             {"q": r["q"], "verdict": r["verdict"], "verdict_cn": VERDICT_CN[r["verdict"]],
@@ -142,6 +157,9 @@ def main() -> int:
             for r in rows
         ],
         "clusters": clusters,
+        "top5": [{"cluster_name": c["canonical_term"], "display_term": c["display_term"],
+                  "growth": c.get("max_growth"), "breakout": c.get("breakout"),
+                  "roots": c.get("source_root_count", 0)} for c in top_clusters],
     }
     out_json = ROOT / "site" / "data" / "daily.json"
     out_json.parent.mkdir(parents=True, exist_ok=True)
@@ -176,14 +194,26 @@ def main() -> int:
     table("复核后排除 / 待观察", by_verdict.get("watch", []))
     table("待复核", by_verdict.get("pending", []))
 
-    A(f"\n## 事件簇（共 {len(clusters)} 个）\n")
-    A("\n| 事件 | 变体数 | 阶段 | 来源词根 | 备注 |")
-    A("\n|---|---|---|---|---|")
-    for c in clusters:
-        var_terms = "、".join(v["term"] for v in c["variants"][:5])
-        A(f"\n| {c['canonical_term']} | {len(c['variants'])} | {c['stage']} | "
-          f"{'、'.join(c['roots'][:3])} | 变体：{var_terms} |")
+    A("\n## 今日 Top 5 事件\n")
+    for index, c in enumerate(top_clusters, 1):
+        rise = "飙升" if c.get("breakout") else f"+{c.get('max_growth') or 0}%"
+        A(f"\n{index}. **{c['canonical_term']}**：{rise}，{c['variant_count']} 个变体，"
+          f"来自 {c['source_root_count']} 个词根。")
     A("\n")
+
+    def cluster_table(title: str, items: list) -> None:
+        A(f"\n## {title}（共 {len(items)} 个）\n")
+        A("\n| 事件 | 展示词 | 变体数 | 峰值 | 来源词根数 | 首次/最后活跃 |")
+        A("\n|---|---|---|---|---|---|")
+        for c in items:
+            rise = "飙升" if c.get("breakout") else f"+{c.get('max_growth') or 0}%"
+            A(f"\n| {c['canonical_term']} | {c['display_term']} | {c['variant_count']} | {rise} | "
+              f"{c['source_root_count']} | {c['first_seen_date']} / {c['last_active_date']} |")
+        A("\n")
+
+    cluster_table("主榜事件", main_clusters)
+    cluster_table("娱乐 / 观察事件", watch_clusters)
+    cluster_table("低信号附录", low_clusters)
 
     A("\n## 各词根上升词（原始）\n")
     for root in sorted(roots_state):

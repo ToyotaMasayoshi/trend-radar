@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import json
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -101,6 +103,12 @@ def test_dedup_keeps_roots():
     check("dedup: one candidate", len(cands) == 1)
     check("dedup: both roots kept", set(cands[0]["roots"]) == {"ai", "agent"})
     check("dedup: strongest growth kept", cands[0]["growth"] == 500)
+    check("dedup: Breakout evidence kept", cands[0]["breakout"] is True)
+
+
+def test_normalize_variants():
+    check("normalize: separators, width and plural",
+          normalize("Ｍesh-Avatar/Songs") == "mesh avatar song")
 
 
 def test_cluster_merge_and_split():
@@ -126,6 +134,27 @@ def test_cluster_merge_and_split():
           all("event" in t for t in strata["timeline"]))
 
 
+def test_cluster_distinctive_single_and_false_merge():
+    rows = [
+        {"q": "chuttamalle", "roots": ["song"]},
+        {"q": "chuttamalle ai song", "roots": ["song"]},
+        {"q": "crikk text to speech", "roots": ["tts"]},
+        {"q": "minimax text to speech", "roots": ["tts"]},
+    ]
+    clusters = build_clusters(rows, today="2026-10-06")
+    chuttamalle = next(c for c in clusters if c["canonical_term"] == "chuttamalle")
+    check("cluster: distinctive single token can be center", chuttamalle["variant_count"] == 2)
+    check("cluster: generic phrase does not merge brands",
+          sum("text to speech" in c["canonical_term"] for c in clusters) == 2)
+
+
+def test_cluster_history_stable_id():
+    first = build_clusters([{"q": "chuttamalle ai", "roots": ["song"]}], today="2026-10-01")
+    second = build_clusters([{"q": "chuttamalle", "roots": ["song"]}], first, "2026-10-02")
+    check("cluster: shorter later term keeps stable id",
+          second[0]["id"] == first[0]["id"] and second[0]["canonical_term"] == "chuttamalle")
+
+
 def test_rate_limited_stops():
     class DeadClient:
         def related_rising(self, root, window):
@@ -144,6 +173,21 @@ def test_trends_client_warms_google_session():
     request = opener.open.call_args.args[0]
     check("trends: warms Google session",
           request.full_url == "https://www.google.com/" and client.requests == 1)
+
+
+def test_trends_client_retries_429():
+    error = urllib.error.HTTPError("https://example.test", 429, "limited", {}, None)
+    response = MagicMock()
+    response.__enter__.return_value = response
+    response.read.return_value = b"ok"
+    client = object.__new__(TrendsClient)
+    client.opener = MagicMock()
+    client.opener.open.side_effect = [error, response]
+    client.retries = 2
+    client.requests = 0
+    with patch("trends.time.sleep"):
+        payload = client._read(urllib.request.Request("https://example.test"), "test")
+    check("429: bounded retry can recover", payload == b"ok" and client.requests == 2)
 
 
 def test_review_prioritizes_breakout():
