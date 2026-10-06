@@ -241,6 +241,9 @@ def test_review_filters_noise_and_resumes_windows():
              "formatted": "飙升", "roots": ["ai coloring page"], "windows": ["now 7-d"]}
     check("review queue: generic local noise excluded",
           not review_eligibility(pizza)[0] and review_eligibility(photo)[0])
+    check("review queue: directly related low signal excluded",
+          not review_eligibility({"q": "photosynthesis coloring page", "growth": 100,
+                                  "breakout": False, "roots": ["ai coloring page"]})[0])
 
     class LimitedClient:
         def __init__(self, fail=False):

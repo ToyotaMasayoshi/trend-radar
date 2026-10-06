@@ -42,6 +42,9 @@ STATE_FILE = ROOT / "state" / "state.json"
 WINDOWS = ("now 7-d", "now 1-d")
 ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "12")))
 REVIEW_REQUEST_BUDGET = max(4, int(os.getenv("REVIEW_REQUEST_BUDGET", "40")))
+BACKLOG_THRESHOLD = 50
+BACKLOG_ROOT_LIMIT = 6
+BACKLOG_REVIEW_BUDGET = 64
 HIGH_RISE_CUT = 1000  # percent; display subset only
 ENTERTAINMENT_MARKERS = (
     "game", "games", "gaming", "roblox", "wordle", "quiz", "puzzle",
@@ -136,11 +139,15 @@ def review_eligibility(item: dict) -> tuple[bool, str]:
         return False, "entertainment"
     if tags["search_intent"] in {"local_commercial", "navigation"}:
         return False, "generic_intent"
-    if tags["relation_status"] in {"direct", "evidence"}:
+    high_rise = bool(item.get("breakout")) or (item.get("growth") or 0) >= 500
+    if tags["relation_status"] in {"direct", "evidence"} and \
+            (high_rise or bool(item.get("source_evidence"))):
         return True, "related"
+    if tags["relation_status"] in {"direct", "evidence"}:
+        return False, "below_review_threshold"
     distinctive = token_set(item.get("q", "")) - RELATION_STOP
-    high_rise = bool(item.get("breakout")) or (item.get("growth") or 0) >= HIGH_RISE_CUT
-    if high_rise and tags["search_intent"] == "unclassified" \
+    coined_rise = bool(item.get("breakout")) or (item.get("growth") or 0) >= HIGH_RISE_CUT
+    if coined_rise and tags["search_intent"] == "unclassified" \
             and 0 < len(distinctive) <= 3 and any(len(token) >= 4 for token in distinctive):
         return True, "coined_term_fallback"
     return False, "unverified_relation"
@@ -362,11 +369,18 @@ def main() -> int:
     rate_limited = False
 
     candidates = build_candidates(state)
-    reviewed, hit = review_candidates(client, candidates, state, args.review_budget)
+    pending_before = sum(normalize(c["q"]) not in state.get("reviews", {})
+                         and review_eligibility(c)[0] for c in candidates)
+    backlog_mode = (pending_before > BACKLOG_THRESHOLD
+                    and args.root_limit == ROOTS_PER_RUN
+                    and args.review_budget == REVIEW_REQUEST_BUDGET)
+    root_limit = BACKLOG_ROOT_LIMIT if backlog_mode else args.root_limit
+    review_budget = BACKLOG_REVIEW_BUDGET if backlog_mode else args.review_budget
+    reviewed, hit = review_candidates(client, candidates, state, review_budget)
     rate_limited |= hit
     refreshed, rising = 0, 0
     if not rate_limited:
-        refreshed, rising, hit = collect_roots(client, roots, state, args.root_limit, args.force)
+        refreshed, rising, hit = collect_roots(client, roots, state, root_limit, args.force)
         rate_limited |= hit
         candidates = build_candidates(state)
 
@@ -374,7 +388,8 @@ def main() -> int:
                            and review_eligibility(c)[0] for c in candidates)
     state["meta"] = {"updated": iso_now(), "requests": client.requests,
                      "rate_limited": rate_limited, "reviewed_this_run": reviewed,
-                     "review_request_budget": args.review_budget,
+                     "review_request_budget": review_budget,
+                     "root_limit": root_limit, "backlog_mode": backlog_mode,
                      "eligible_pending": eligible_pending}
     save_json(STATE_FILE, state)
     if not (refreshed or reviewed):

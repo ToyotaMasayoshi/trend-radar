@@ -174,6 +174,8 @@ def main() -> int:
             "review_progress_windows": progress_windows,
             "reviewed_this_run": meta.get("reviewed_this_run", 0),
             "review_request_budget": meta.get("review_request_budget"),
+            "backlog_mode": meta.get("backlog_mode", False),
+            "root_limit": meta.get("root_limit"),
             "high_rise": len(high),
             "by_verdict": {k: len(v) for k, v in by_verdict.items()},
             "requests": meta.get("requests", 0),

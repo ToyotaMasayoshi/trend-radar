@@ -44,7 +44,7 @@ let C=[],V="all";
 const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 fetch("data/daily.json").then(r=>r.json()).then(d=>{
   document.getElementById("meta").textContent=
-    `更新：${d.updated_at} · 词根 ${d.stats.roots_cached}/${d.stats.roots_total} · 候选 ${d.stats.candidates} · 已复核 ${d.stats.reviewed}（${(d.stats.review_coverage*100).toFixed(1)}%） · 有效待复核 ${d.stats.eligible_pending} · 已排除 ${d.stats.excluded_from_review} · 断点窗口 ${d.stats.review_progress_windows} · 事件 ${d.stats.active_clusters} · 请求 ${d.stats.requests}${d.stats.rate_limited?" · 429后已保存进度":""}`;
+    `更新：${d.updated_at} · 词根 ${d.stats.roots_cached}/${d.stats.roots_total} · 候选 ${d.stats.candidates} · 已复核 ${d.stats.reviewed}（${(d.stats.review_coverage*100).toFixed(1)}%） · 有效待复核 ${d.stats.eligible_pending} · 已排除 ${d.stats.excluded_from_review} · 断点窗口 ${d.stats.review_progress_windows}${d.stats.backlog_mode?" · 积压优先模式":""} · 事件 ${d.stats.active_clusters} · 请求 ${d.stats.requests}${d.stats.rate_limited?" · 429后已保存进度":""}`;
   C=d.candidates;
   render("all");
   document.getElementById("top5").innerHTML=(d.top5||[]).map(c=>`<li><b>${esc(c.cluster_name)}</b>：${c.breakout?"飙升":"+"+(c.growth||0)+"%"}，${c.roots} 个来源词根</li>`).join("");
