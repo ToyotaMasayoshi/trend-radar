@@ -25,8 +25,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from collect import build_candidates, is_entertainment, normalize
-from cluster import tag_candidate
+from collect import (build_candidates, is_entertainment, normalize,
+                     review_eligibility, tag_candidate)
 
 STATE_FILE = ROOT / "state" / "state.json"
 CLUSTERS_FILE = ROOT / "state" / "clusters.json"
@@ -91,10 +91,16 @@ def main() -> int:
         return 1
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
+    candidate_pool = build_candidates(state)
     pending = [apply_policy(dict(c, verdict="pending", note="已采集，等待历史复核"), False)
-               for c in build_candidates(state) if normalize(c["q"]) not in reviews]
+               for c in candidate_pool if normalize(c["q"]) not in reviews]
     reviewed_rows = [apply_policy(r, True) for r in reviews.values()]
     rows = sorted([*reviewed_rows, *pending], key=ranking_key)
+    eligible_pending = sum(normalize(c["q"]) not in reviews and review_eligibility(c)[0]
+                           for c in candidate_pool)
+    unreviewed_total = len(pending)
+    progress = state.get("review_progress", {})
+    progress_windows = sum(len(item.get("windows", {})) for item in progress.values())
     by_verdict: dict[str, list] = {}
     for r in rows:
         by_verdict.setdefault(r["verdict"], []).append(r)
@@ -148,6 +154,8 @@ def main() -> int:
             "relation_rule": "raw Trends hits are audited separately; only token/entity-matched roots count",
             "intent_rule": "local/navigation noise cannot bypass relevance through Breakout",
             "review_rule": "unreviewed related queries stay in watch or low-signal tiers",
+            "review_queue_rule": "direct/evidence-linked terms first; generic, navigation and entertainment noise excluded; short high-rise coined terms retained",
+            "review_resume_rule": "12m/5y/30d/7d windows persist independently and resume after 429",
             "low_signal_rule": "growth <500%, not Breakout, no source evidence, fewer than 2 relevant roots",
         },
         "stats": {
@@ -158,6 +166,14 @@ def main() -> int:
             "rising_terms": rising_total,
             "candidates": len(rows),
             "reviewed": len(reviews),
+            "unreviewed_total": unreviewed_total,
+            "eligible_pending": eligible_pending,
+            "excluded_from_review": max(0, unreviewed_total - eligible_pending),
+            "review_coverage": round(len(reviews) / len(rows), 4) if rows else 0,
+            "review_progress_terms": len(progress),
+            "review_progress_windows": progress_windows,
+            "reviewed_this_run": meta.get("reviewed_this_run", 0),
+            "review_request_budget": meta.get("review_request_budget"),
             "high_rise": len(high),
             "by_verdict": {k: len(v) for k, v in by_verdict.items()},
             "requests": meta.get("requests", 0),
@@ -210,7 +226,7 @@ def main() -> int:
                      else "**本轮覆盖率 %.1f%%，数据不全，以下结论基于部分数据**" % coverage_pct)
     A(f"地区：全球 · 词根已查 {len(roots_state)}/{roots_total} 个 · {coverage_note} · "
       f"时间窗 now 7-d, now 1-d · 上升词 {rising_total} 条 → 候选 {len(rows)} 个 · "
-      f"已复核 {len(reviews)} 个 · **新词 {new_n} 个 · 老词二次爆火 {rev_n} 个**\n")
+      f"有效待复核 {eligible_pending} 个 · **新词 {new_n} 个 · 老词二次爆火 {rev_n} 个**\n")
     A("> 趋势数据是 0~100 的相对热度，不是搜索量；「vs gpts」是同一张图里最近 7 天热度的倍数。\n")
     A("> 新词只说明「刚出现」，能不能做还要看搜索量、KD 和 SERP。\n")
 
@@ -273,6 +289,8 @@ def main() -> int:
     A("\n## 数据边界说明\n")
     A("\n- Google Trends 数值为同一图表内 0~100 相对热度，不是绝对搜索量。")
     A("\n- `now 7-d` / `now 1-d` 为滚动窗口；历史回放与采集当时不一定是同一快照。")
+    A("\n- vs gpts 为同图相对倍数。短时尖峰须由 30 天日线直接证明，证据不足只标待观察。")
+    A("\n- 历史复核先过滤泛化意图和无关噪声；每个时间窗口独立保存，遇到 429 后续跑。")
     A("\n- vs gpts 为同图相对倍数。短时尖峰须由 30 天日线直接证明，证据不足只标待观察。")
     A("\n- 假设类字段（如 AI 发现/推荐机制）为运行假设，标注为 hypothesis，不作为已确认事实。\n")
     A("\n- 传播证据来自 Hacker News 公开故事搜索（免费 Algolia API），仅覆盖英文技术社区讨论；"

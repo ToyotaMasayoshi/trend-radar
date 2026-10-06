@@ -13,8 +13,9 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from collect import build_candidates, classify, collect_roots, is_entertainment, normalize, review_candidates
-from cluster import build_clusters, HYPOTHESES, tag_candidate
+from collect import (build_candidates, classify, collect_roots, is_entertainment,
+                     normalize, review_candidates, review_eligibility, tag_candidate)
+from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
 import report
 
@@ -215,7 +216,10 @@ def test_trends_client_retries_429():
 
 def test_review_prioritizes_breakout():
     class FakeClient:
+        requests = 0
+
         def timeline(self, keywords, timeframe):
+            self.requests += 2
             return {keyword: pts([1]) for keyword in keywords}
 
     candidates = [
@@ -225,9 +229,41 @@ def test_review_prioritizes_breakout():
          "roots": ["a"], "windows": ["now 7-d"]},
     ]
     state = {}
-    reviewed, limited = review_candidates(FakeClient(), candidates, state, 1)
+    reviewed, limited = review_candidates(FakeClient(), candidates, state, 6)
     check("review: breakout first",
           reviewed == 1 and not limited and "breakout" in state["reviews"])
+
+
+def test_review_filters_noise_and_resumes_windows():
+    pizza = {"q": "best pizza near me", "growth": 80350, "breakout": True,
+             "formatted": "飙升", "roots": ["ai art"], "windows": ["now 7-d"]}
+    photo = {"q": "photosynthesis coloring page", "growth": 236600, "breakout": True,
+             "formatted": "飙升", "roots": ["ai coloring page"], "windows": ["now 7-d"]}
+    check("review queue: generic local noise excluded",
+          not review_eligibility(pizza)[0] and review_eligibility(photo)[0])
+
+    class LimitedClient:
+        def __init__(self, fail=False):
+            self.requests, self.calls, self.fail = 0, [], fail
+
+        def timeline(self, keywords, timeframe):
+            self.requests += 2
+            self.calls.append(timeframe)
+            if self.fail and len(self.calls) == 2:
+                raise RateLimited("429")
+            return {keyword: pts([1]) for keyword in keywords}
+
+    state = {}
+    first = LimitedClient(True)
+    reviewed, limited = review_candidates(first, [photo], state, 8)
+    check("review resume: completed window survives 429",
+          reviewed == 0 and limited
+          and "yearly" in state["review_progress"][normalize(photo["q"])]["windows"])
+    second = LimitedClient()
+    reviewed, limited = review_candidates(second, [photo], state, 8)
+    check("review resume: next run skips saved window and completes",
+          reviewed == 1 and not limited and "today 12-m" not in second.calls
+          and normalize(photo["q"]) not in state["review_progress"])
 
 
 def test_empty_report_is_rejected():

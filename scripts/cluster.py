@@ -4,31 +4,17 @@
 from __future__ import annotations
 
 import hashlib
-import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from collect import build_candidates, is_entertainment, load_json, normalize, save_json
+from collect import (COMMON, NAVIGATION, build_candidates, is_entertainment,
+                     load_json, normalize, save_json, tag_candidate, token_set)
 
 STATE_FILE = ROOT / "state" / "state.json"
 CLUSTERS_FILE = ROOT / "state" / "clusters.json"
-
-COMMON = {
-    "the", "and", "for", "with", "from", "what", "how", "new", "best",
-    "to", "of", "in", "on", "at", "by",
-    "ai", "app", "game", "song", "video", "news", "tool", "free", "online",
-    "generator", "text", "speech", "download", "login", "official", "website",
-}
-NAVIGATION = {"download", "login", "official", "website", "官网", "下载", "登录"}
-RELATION_STOP = COMMON | {"page", "site", "near", "me"}
-LOCAL_INTENT = ("near me", "open now", "closest", "附近", "就近")
-EDUCATION_INTENT = {"coloring", "worksheet", "lesson", "quiz", "printable", "教材", "练习题", "涂色"}
-TOOL_INTENT = {"generator", "converter", "editor", "maker", "api", "app", "tool", "platform", "生成器", "转换器", "编辑器", "工具"}
-INFO_INTENT = {"how", "what", "why", "guide", "tutorial", "教程", "怎么", "什么", "为什么"}
-COMMERCIAL_INTENT = {"buy", "price", "pricing", "shop", "deal", "review", "best", "购买", "价格", "评测"}
 
 HYPOTHESES = {
     "new_domain_discovery": "hypothesis",
@@ -42,55 +28,12 @@ def iso_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
-def token_set(text: str) -> set[str]:
-    return set(re.findall(r"[a-z0-9\u4e00-\u9fff]+", normalize(text)))
-
-
 def signature(text: str) -> str:
     return " ".join(sorted(token_set(text)))
 
 
 def distinctive(text: str) -> set[str]:
     return token_set(text) - COMMON
-
-
-def tag_candidate(item: dict, reviewed: bool | None = None) -> dict:
-    """Deterministic per-run labels; raw Trends roots are audit data only."""
-    query = item.get("q", "")
-    roots = sorted(set(item.get("roots", [])))
-    query_tokens = token_set(query)
-    meaningful = query_tokens - RELATION_STOP
-    relevant_roots = [root for root in roots
-                      if meaningful & (token_set(root) - RELATION_STOP)]
-    evidence = bool(item.get("source_evidence"))
-    relation = "direct" if relevant_roots else "evidence" if evidence else "behavioral_unverified"
-    reviewed = (bool(item.get("reviewed_at")) or item.get("verdict") not in (None, "pending")) \
-        if reviewed is None else reviewed
-    normalized = normalize(query)
-    if any(marker in normalized for marker in LOCAL_INTENT):
-        intent = "local_commercial"
-    elif query_tokens & NAVIGATION:
-        intent = "navigation"
-    elif query_tokens & EDUCATION_INTENT:
-        intent = "educational_content"
-    elif query_tokens & TOOL_INTENT:
-        intent = "tool_product"
-    elif query_tokens & INFO_INTENT:
-        intent = "informational"
-    elif query_tokens & COMMERCIAL_INTENT:
-        intent = "commercial_research"
-    else:
-        intent = "unclassified"
-    return {
-        "raw_source_root_count": len(roots),
-        "relevant_roots": relevant_roots,
-        "relevant_root_count": len(relevant_roots),
-        "relation_status": relation,
-        "search_intent": intent,
-        "review_status": "reviewed" if reviewed else "pending",
-        # Competition needs a separate SERP source; never infer it from Trends.
-        "market_status": "unchecked",
-    }
 
 
 def can_merge(a: dict, b: dict) -> bool:

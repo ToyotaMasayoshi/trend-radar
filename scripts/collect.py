@@ -5,7 +5,8 @@ Pipeline (methodology inferred from the reference daily reports):
   1. For each root: related rising queries in `now 7-d` and `now 1-d` (global).
   2. Candidate pool = ALL rising queries after normalized dedup
      (Breakout or growth >= 1000% is only a display subset, not the gate).
-  3. Review candidates with history windows:
+  3. Pre-filter the review queue by intent/root relevance, then review with
+     resumable history windows under a fixed request budget:
        today 12-m  -> first appearance, recent peak vs prior baseline
        today 1-m   -> last-30d daily line, has it faded
        now 7-d     -> compare against `gpts` in the same chart (relative multiple)
@@ -39,8 +40,8 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE_FILE = ROOT / "state" / "state.json"
 
 WINDOWS = ("now 7-d", "now 1-d")
-ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "24")))
-REVIEWS_PER_RUN = max(1, int(os.getenv("REVIEWS_PER_RUN", "8")))
+ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "12")))
+REVIEW_REQUEST_BUDGET = max(4, int(os.getenv("REVIEW_REQUEST_BUDGET", "40")))
 HIGH_RISE_CUT = 1000  # percent; display subset only
 ENTERTAINMENT_MARKERS = (
     "game", "games", "gaming", "roblox", "wordle", "quiz", "puzzle",
@@ -51,6 +52,19 @@ ENTERTAINMENT_MARKERS = (
     "歌手", "综艺", "足球", "篮球", "体育", "谜题", "测验",
 )
 PLURAL_EXCEPTIONS = {"news", "series", "species", "analysis", "status", "gpts"}
+COMMON = {
+    "the", "and", "for", "with", "from", "what", "how", "new", "best",
+    "to", "of", "in", "on", "at", "by",
+    "ai", "app", "game", "song", "video", "news", "tool", "free", "online",
+    "generator", "text", "speech", "download", "login", "official", "website",
+}
+NAVIGATION = {"download", "login", "official", "website", "官网", "下载", "登录"}
+RELATION_STOP = COMMON | {"page", "site", "near", "me"}
+LOCAL_INTENT = ("near me", "open now", "closest", "附近", "就近")
+EDUCATION_INTENT = {"coloring", "worksheet", "lesson", "quiz", "printable", "教材", "练习题", "涂色"}
+TOOL_INTENT = {"generator", "converter", "editor", "maker", "api", "app", "tool", "platform", "生成器", "转换器", "编辑器", "工具"}
+INFO_INTENT = {"how", "what", "why", "guide", "tutorial", "教程", "怎么", "什么", "为什么"}
+COMMERCIAL_INTENT = {"buy", "price", "pricing", "shop", "deal", "review", "best", "购买", "价格", "评测"}
 
 
 def iso_now() -> str:
@@ -66,11 +80,70 @@ def normalize(value: str) -> str:
     return " ".join(words)
 
 
+def token_set(text: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9\u4e00-\u9fff]+", normalize(text)))
+
+
 def is_entertainment(term: str, roots: list[str]) -> bool:
     """Deterministic policy label from the term and its source roots."""
     text = " ".join(normalize(v) for v in [term, *roots])
     return any(re.search(rf"(?<![a-z0-9]){re.escape(marker)}(?![a-z0-9])", text)
                for marker in ENTERTAINMENT_MARKERS)
+
+
+def tag_candidate(item: dict, reviewed: bool | None = None) -> dict:
+    """Deterministic per-run labels; raw Trends roots are audit data only."""
+    query = item.get("q", "")
+    roots = sorted(set(item.get("roots", [])))
+    query_tokens = token_set(query)
+    meaningful = query_tokens - RELATION_STOP
+    relevant_roots = [root for root in roots
+                      if meaningful & (token_set(root) - RELATION_STOP)]
+    evidence = bool(item.get("source_evidence"))
+    relation = "direct" if relevant_roots else "evidence" if evidence else "behavioral_unverified"
+    reviewed = (bool(item.get("reviewed_at")) or item.get("verdict") not in (None, "pending")) \
+        if reviewed is None else reviewed
+    normalized = normalize(query)
+    if any(marker in normalized for marker in LOCAL_INTENT):
+        intent = "local_commercial"
+    elif query_tokens & NAVIGATION:
+        intent = "navigation"
+    elif query_tokens & EDUCATION_INTENT:
+        intent = "educational_content"
+    elif query_tokens & TOOL_INTENT:
+        intent = "tool_product"
+    elif query_tokens & INFO_INTENT:
+        intent = "informational"
+    elif query_tokens & COMMERCIAL_INTENT:
+        intent = "commercial_research"
+    else:
+        intent = "unclassified"
+    return {
+        "raw_source_root_count": len(roots),
+        "relevant_roots": relevant_roots,
+        "relevant_root_count": len(relevant_roots),
+        "relation_status": relation,
+        "search_intent": intent,
+        "review_status": "reviewed" if reviewed else "pending",
+        "market_status": "unchecked",
+    }
+
+
+def review_eligibility(item: dict) -> tuple[bool, str]:
+    """Keep generic noise out while preserving short high-rise coined terms."""
+    tags = tag_candidate(item, False)
+    if is_entertainment(item.get("q", ""), []):
+        return False, "entertainment"
+    if tags["search_intent"] in {"local_commercial", "navigation"}:
+        return False, "generic_intent"
+    if tags["relation_status"] in {"direct", "evidence"}:
+        return True, "related"
+    distinctive = token_set(item.get("q", "")) - RELATION_STOP
+    high_rise = bool(item.get("breakout")) or (item.get("growth") or 0) >= HIGH_RISE_CUT
+    if high_rise and tags["search_intent"] == "unclassified" \
+            and 0 < len(distinctive) <= 3 and any(len(token) >= 4 for token in distinctive):
+        return True, "coined_term_fallback"
+    return False, "unverified_relation"
 
 
 def load_json(path: Path, fallback):
@@ -214,30 +287,62 @@ def build_candidates(state: dict) -> list:
 
 
 def review_candidates(client: TrendsClient, candidates: list, state: dict,
-                      limit: int) -> tuple[int, bool]:
-    """Review up to `limit` unreviewed candidates. Returns (reviewed, rate_limited)."""
+                      request_budget: int) -> tuple[int, bool]:
+    """Review eligible candidates within a request budget, resuming saved windows."""
     reviews = state.setdefault("reviews", {})
+    progress = state.setdefault("review_progress", {})
     pending = sorted(
-        (c for c in candidates if normalize(c["q"]) not in reviews),
-        key=lambda c: (not c["breakout"], -(c["growth"] or 0), normalize(c["q"])),
+        (c for c in candidates if normalize(c["q"]) not in reviews
+         and review_eligibility(c)[0]),
+        key=lambda c: (review_eligibility(c)[1] == "coined_term_fallback",
+                       not c["breakout"], -(c["growth"] or 0), normalize(c["q"])),
     )
+    start_requests = client.requests
     reviewed = 0
+
+    def fetch(slot: str, term: str, timeframe: str, keywords: list[str], work: dict) -> bool:
+        if slot in work:
+            return True
+        if client.requests - start_requests + 2 > request_budget:
+            return False
+        result = client.timeline(keywords, timeframe)
+        work[slot] = result
+        return True
+
     try:
-        for cand in pending[:limit]:
-            term = cand["q"]
-            yearly = client.timeline([term], "today 12-m")[term]
-            monthly = client.timeline([term], "today 1-m")[term]
-            both = client.timeline([term, "gpts"], "now 7-d")
-            five_year = client.timeline([term], "today 5-y")[term]
-            result = classify(yearly, monthly, both.get(term, []),
-                              both.get("gpts", []), five_year)
+        for cand in pending:
+            display_term = cand["q"]
+            key = normalize(display_term)
+            work = progress.setdefault(key, {"q": display_term, "windows": {}})
+            term = work["q"]  # keep persisted series keys stable across casing variants
+            windows = work["windows"]
+            if not fetch("yearly", term, "today 12-m", [term], windows):
+                break
+            if not fetch("five_year", term, "today 5-y", [term], windows):
+                break
+            yearly = windows["yearly"].get(term, [])
+            five_year = windows["five_year"].get(term, [])
+            preliminary = classify(yearly, [], [], [], five_year)
+            monthly = []
+            if preliminary["verdict"] == "revived":
+                if not fetch("monthly", term, "today 1-m", [term], windows):
+                    break
+                monthly = windows["monthly"].get(term, [])
+            weekly, weekly_gpts = [], []
+            if preliminary["verdict"] in {"new", "revived"}:
+                if not fetch("weekly", term, "now 7-d", [term, "gpts"], windows):
+                    break
+                weekly = windows["weekly"].get(term, [])
+                weekly_gpts = windows["weekly"].get("gpts", [])
+            result = classify(yearly, monthly, weekly, weekly_gpts, five_year)
             result.update({
-                "q": term, "reviewed_at": iso_now(),
+                "q": display_term, "reviewed_at": iso_now(),
                 "growth": cand["growth"], "breakout": cand["breakout"],
                 "formatted": cand["formatted"],
                 "roots": cand["roots"], "windows": cand["windows"],
             })
-            reviews[normalize(term)] = result
+            reviews[key] = result
+            progress.pop(key, None)
             reviewed += 1
     except RateLimited:
         return reviewed, True
@@ -248,7 +353,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--root-limit", type=int, default=ROOTS_PER_RUN)
-    parser.add_argument("--review-limit", type=int, default=REVIEWS_PER_RUN)
+    parser.add_argument("--review-budget", type=int, default=REVIEW_REQUEST_BUDGET)
     args = parser.parse_args()
 
     roots = json.loads((ROOT / "state" / "roots.json").read_text(encoding="utf-8"))["roots"]
@@ -257,7 +362,7 @@ def main() -> int:
     rate_limited = False
 
     candidates = build_candidates(state)
-    reviewed, hit = review_candidates(client, candidates, state, args.review_limit)
+    reviewed, hit = review_candidates(client, candidates, state, args.review_budget)
     rate_limited |= hit
     refreshed, rising = 0, 0
     if not rate_limited:
@@ -265,11 +370,14 @@ def main() -> int:
         rate_limited |= hit
         candidates = build_candidates(state)
 
-    if refreshed or reviewed:
-        state["meta"] = {"updated": iso_now(), "requests": client.requests,
-                         "rate_limited": rate_limited}
-        save_json(STATE_FILE, state)
-    else:
+    eligible_pending = sum(normalize(c["q"]) not in state.get("reviews", {})
+                           and review_eligibility(c)[0] for c in candidates)
+    state["meta"] = {"updated": iso_now(), "requests": client.requests,
+                     "rate_limited": rate_limited, "reviewed_this_run": reviewed,
+                     "review_request_budget": args.review_budget,
+                     "eligible_pending": eligible_pending}
+    save_json(STATE_FILE, state)
+    if not (refreshed or reviewed):
         print("No fresh root evidence; keeping the last successful output")
 
     if rate_limited:
