@@ -5,8 +5,8 @@
   "2026-10-03.md",
   "github-radar:2026-10-06"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP)",
- "count": 566,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 576,
  "roots": [
   "ai",
   "ai generator",
@@ -573,7 +573,17 @@
   "trump meeting with ai leaders",
   "zombie trend",
   "using ai as a therapist",
-  "huashu art motion"
+  "huashu art motion",
+  "muse skills",
+  "gemini argon",
+  "dots openai",
+  "gpt 6.1 sol",
+  "openai 6.1 sol",
+  "khaw boon wan",
+  "gemini 4 argon google ai",
+  "openai model plays world of warcraft",
+  "anthropic analysis of glm 5.3",
+  "hunyuan 3d 2.0"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1141,7 +1151,17 @@
   "trump meeting with ai leaders": "feedback",
   "zombie trend": "feedback",
   "using ai as a therapist": "feedback",
-  "huashu art motion": "github-radar"
+  "huashu art motion": "github-radar",
+  "muse skills": "github-radar",
+  "gemini argon": "feedback",
+  "dots openai": "feedback",
+  "gpt 6.1 sol": "feedback",
+  "openai 6.1 sol": "feedback",
+  "khaw boon wan": "feedback",
+  "gemini 4 argon google ai": "feedback",
+  "openai model plays world of warcraft": "feedback",
+  "anthropic analysis of glm 5.3": "feedback",
+  "hunyuan 3d 2.0": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1709,7 +1729,17 @@
   "trump meeting with ai leaders": "2026-10-06",
   "zombie trend": "2026-10-06",
   "using ai as a therapist": "2026-10-06",
-  "huashu art motion": "2026-10-06"
+  "huashu art motion": "2026-10-06",
+  "muse skills": "2026-10-06",
+  "gemini argon": "2026-10-06",
+  "dots openai": "2026-10-06",
+  "gpt 6.1 sol": "2026-10-06",
+  "openai 6.1 sol": "2026-10-06",
+  "khaw boon wan": "2026-10-06",
+  "gemini 4 argon google ai": "2026-10-06",
+  "openai model plays world of warcraft": "2026-10-06",
+  "anthropic analysis of glm 5.3": "2026-10-06",
+  "hunyuan 3d 2.0": "2026-10-06"
  },
  "marks": {},
  "root_blocklist": [
