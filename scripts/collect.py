@@ -40,10 +40,10 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE_FILE = ROOT / "state" / "state.json"
 
 WINDOWS = ("now 7-d", "now 1-d")
-ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "12")))
+ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "10")))
 REVIEW_REQUEST_BUDGET = max(4, int(os.getenv("REVIEW_REQUEST_BUDGET", "40")))
 BACKLOG_THRESHOLD = 50
-BACKLOG_ROOT_LIMIT = 6
+BACKLOG_ROOT_LIMIT = 10
 BACKLOG_REVIEW_BUDGET = 64
 HIGH_RISE_CUT = 1000  # percent; display subset only
 ENTERTAINMENT_MARKERS = (
@@ -392,13 +392,14 @@ def main() -> int:
                     and args.review_budget == REVIEW_REQUEST_BUDGET)
     root_limit = BACKLOG_ROOT_LIMIT if backlog_mode else args.root_limit
     review_budget = BACKLOG_REVIEW_BUDGET if backlog_mode else args.review_budget
-    reviewed, hit = review_candidates(client, candidates, state, review_budget)
+    # Refresh roots first: review backlog must not starve daily discovery.
+    refreshed, rising, hit = collect_roots(client, roots, state, root_limit, args.force)
     rate_limited |= hit
-    refreshed, rising = 0, 0
+    candidates = build_candidates(state)
+    reviewed = 0
     if not rate_limited:
-        refreshed, rising, hit = collect_roots(client, roots, state, root_limit, args.force)
+        reviewed, hit = review_candidates(client, candidates, state, review_budget)
         rate_limited |= hit
-        candidates = build_candidates(state)
 
     eligible_pending = sum(normalize(c["q"]) not in state.get("reviews", {})
                            and review_eligibility(c)[0] for c in candidates)
