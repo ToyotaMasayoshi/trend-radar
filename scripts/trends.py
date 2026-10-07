@@ -120,7 +120,7 @@ class TrendsClient:
     def related_rising_many(self, roots: list[str], timeframe: str) -> dict[str, list]:
         """Related rising queries for up to four roots, sharing one explore call."""
         widgets = [w for w in self._explore(roots, timeframe)
-                   if w.get("id") == "RELATED_QUERIES"]
+                   if "RELATED_QUERIES" in w.get("id", "")]
         result = {root: [] for root in roots}
         # Google returns one RELATED_QUERIES widget per comparison item, in order.
         for root, widget in zip(roots, widgets):

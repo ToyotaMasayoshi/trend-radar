@@ -223,6 +223,17 @@ def test_rate_limited_stops():
 
 
 def test_root_and_history_batching():
+    trends = object.__new__(TrendsClient)
+    trends._explore = lambda roots, window: [
+        {"id": f"RELATED_QUERIES_{i}", "request": {}, "token": str(i)}
+        for i in range(4)]
+    trends.get = MagicMock(return_value={"default": {"rankedList": [{}, {
+        "rankedKeyword": [{"query": "signal", "value": 1000}]}]}})
+    related = trends.related_rising_many(["alpha", "beta", "gamma", "delta"], "now 7-d")
+    check("trends: numbered related-query widgets are batched",
+          all(related[root][0]["query"] == "signal" for root in related)
+          and trends.get.call_count == 4)
+
     class RootClient:
         requests = 1
         calls = []
