@@ -7,7 +7,7 @@
   "github-radar:2026-10-07"
  ],
  "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 547,
+ "count": 545,
  "roots": [
   "ai",
   "ai generator",
@@ -552,10 +552,8 @@
   "huashu art motion",
   "muse skills",
   "runway gen-4",
-  "replicate using dna crossword clue",
   "genspark ai workspace 4.0",
-  "runway gen-2 free",
-  "v0 by verce"
+  "runway gen-2 free"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1101,10 +1099,8 @@
   "huashu art motion": "github-radar",
   "muse skills": "github-radar",
   "runway gen-4": "feedback",
-  "replicate using dna crossword clue": "feedback",
   "genspark ai workspace 4.0": "feedback",
-  "runway gen-2 free": "feedback",
-  "v0 by verce": "feedback"
+  "runway gen-2 free": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1650,10 +1646,8 @@
   "huashu art motion": "2026-10-06",
   "muse skills": "2026-10-06",
   "runway gen-4": "2026-10-07",
-  "replicate using dna crossword clue": "2026-10-07",
   "genspark ai workspace 4.0": "2026-10-07",
-  "runway gen-2 free": "2026-10-07",
-  "v0 by verce": "2026-10-07"
+  "runway gen-2 free": "2026-10-07"
  },
  "marks": {},
  "root_blocklist": [
@@ -1714,6 +1708,8 @@
   "google scholar",
   "atlas edu",
   "argos atlas",
-  "photosynthesis coloring page"
+  "photosynthesis coloring page",
+  "replicate using dna crossword clue",
+  "v0 by verce"
  ]
 }
