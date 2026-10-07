@@ -6,8 +6,8 @@
   "github-radar:2026-10-06",
   "github-radar:2026-10-07"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 554,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 565,
  "roots": [
   "ai",
   "ai generator",
@@ -562,7 +562,18 @@
   "nestlé toll house countdown calendar",
   "atco merger",
   "deadlock vote counter",
-  "universal pokémon randomizer zx"
+  "universal pokémon randomizer zx",
+  "aion 2 steam best seller",
+  "jamb admission deadline extension 2021 2025",
+  "james gunn dcu paramount merger",
+  "sainsbury's morrisons merger talks",
+  "pet store tycoon codes",
+  "skydance warner bros merger layoffs",
+  "the tycoon scapegoat bride",
+  "fortnite nuclear tycoon codes",
+  "paraphraser francais",
+  "this is fine meme generator",
+  "pura jankari image resizer"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1118,7 +1129,18 @@
   "nestlé toll house countdown calendar": "feedback",
   "atco merger": "feedback",
   "deadlock vote counter": "feedback",
-  "universal pokémon randomizer zx": "feedback"
+  "universal pokémon randomizer zx": "feedback",
+  "aion 2 steam best seller": "feedback",
+  "jamb admission deadline extension 2021 2025": "feedback",
+  "james gunn dcu paramount merger": "feedback",
+  "sainsbury's morrisons merger talks": "feedback",
+  "pet store tycoon codes": "feedback",
+  "skydance warner bros merger layoffs": "feedback",
+  "the tycoon scapegoat bride": "feedback",
+  "fortnite nuclear tycoon codes": "feedback",
+  "paraphraser francais": "feedback",
+  "this is fine meme generator": "feedback",
+  "pura jankari image resizer": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1674,7 +1696,18 @@
   "nestlé toll house countdown calendar": "2026-10-07",
   "atco merger": "2026-10-07",
   "deadlock vote counter": "2026-10-07",
-  "universal pokémon randomizer zx": "2026-10-07"
+  "universal pokémon randomizer zx": "2026-10-07",
+  "aion 2 steam best seller": "2026-10-07",
+  "jamb admission deadline extension 2021 2025": "2026-10-07",
+  "james gunn dcu paramount merger": "2026-10-07",
+  "sainsbury's morrisons merger talks": "2026-10-07",
+  "pet store tycoon codes": "2026-10-07",
+  "skydance warner bros merger layoffs": "2026-10-07",
+  "the tycoon scapegoat bride": "2026-10-07",
+  "fortnite nuclear tycoon codes": "2026-10-07",
+  "paraphraser francais": "2026-10-07",
+  "this is fine meme generator": "2026-10-07",
+  "pura jankari image resizer": "2026-10-07"
  },
  "marks": {},
  "root_blocklist": [
