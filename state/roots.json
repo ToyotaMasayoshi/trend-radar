@@ -3,10 +3,11 @@
   "2026-10-01.md",
   "2026-10-02.md",
   "2026-10-03.md",
-  "github-radar:2026-10-06"
+  "github-radar:2026-10-06",
+  "github-radar:2026-10-07"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 590,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 598,
  "roots": [
   "ai",
   "ai generator",
@@ -597,7 +598,15 @@
   "gemma longo",
   "pilot stabbed by copilot",
   "leonardo.ai",
-  "kie ai grok imagine"
+  "kie ai grok imagine",
+  "sol 6.1",
+  "chatgpt dots",
+  "openai decisions api",
+  "fly dubai copilot",
+  "gpt 6.1 luna",
+  "anthropic claude frontier academy training",
+  "ugc là gì",
+  "prompt gemini ai foto sendiri"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1189,7 +1198,15 @@
   "gemma longo": "feedback",
   "pilot stabbed by copilot": "feedback",
   "leonardo.ai": "feedback",
-  "kie ai grok imagine": "feedback"
+  "kie ai grok imagine": "feedback",
+  "sol 6.1": "feedback",
+  "chatgpt dots": "feedback",
+  "openai decisions api": "feedback",
+  "fly dubai copilot": "feedback",
+  "gpt 6.1 luna": "feedback",
+  "anthropic claude frontier academy training": "feedback",
+  "ugc là gì": "feedback",
+  "prompt gemini ai foto sendiri": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1781,7 +1798,15 @@
   "gemma longo": "2026-10-06",
   "pilot stabbed by copilot": "2026-10-06",
   "leonardo.ai": "2026-10-06",
-  "kie ai grok imagine": "2026-10-06"
+  "kie ai grok imagine": "2026-10-06",
+  "sol 6.1": "2026-10-07",
+  "chatgpt dots": "2026-10-07",
+  "openai decisions api": "2026-10-07",
+  "fly dubai copilot": "2026-10-07",
+  "gpt 6.1 luna": "2026-10-07",
+  "anthropic claude frontier academy training": "2026-10-07",
+  "ugc là gì": "2026-10-07",
+  "prompt gemini ai foto sendiri": "2026-10-07"
  },
  "marks": {},
  "root_blocklist": [
