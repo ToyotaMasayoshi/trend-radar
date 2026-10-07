@@ -6,8 +6,8 @@
   "github-radar:2026-10-06",
   "github-radar:2026-10-07"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 553,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 549,
  "roots": [
   "ai",
   "ai generator",
@@ -554,14 +554,10 @@
   "runway gen-4",
   "genspark ai workspace 4.0",
   "runway gen-2 free",
-  "eminem tyler the creator diss",
-  "crushon.ai",
-  "is chai ai down",
   "syntx.ai",
-  "apps like chai ai but free",
   "manus ai 無料",
   "charmed magic hour",
-  "hugging face open llm leaderboard"
+  "trump approval by state tracker"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1109,14 +1105,10 @@
   "runway gen-4": "feedback",
   "genspark ai workspace 4.0": "feedback",
   "runway gen-2 free": "feedback",
-  "eminem tyler the creator diss": "feedback",
-  "crushon.ai": "feedback",
-  "is chai ai down": "feedback",
   "syntx.ai": "feedback",
-  "apps like chai ai but free": "feedback",
   "manus ai 無料": "feedback",
   "charmed magic hour": "feedback",
-  "hugging face open llm leaderboard": "feedback"
+  "trump approval by state tracker": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1664,14 +1656,10 @@
   "runway gen-4": "2026-10-07",
   "genspark ai workspace 4.0": "2026-10-07",
   "runway gen-2 free": "2026-10-07",
-  "eminem tyler the creator diss": "2026-10-07",
-  "crushon.ai": "2026-10-07",
-  "is chai ai down": "2026-10-07",
   "syntx.ai": "2026-10-07",
-  "apps like chai ai but free": "2026-10-07",
   "manus ai 無料": "2026-10-07",
   "charmed magic hour": "2026-10-07",
-  "hugging face open llm leaderboard": "2026-10-07"
+  "trump approval by state tracker": "2026-10-07"
  },
  "marks": {},
  "root_blocklist": [
@@ -1734,6 +1722,11 @@
   "argos atlas",
   "photosynthesis coloring page",
   "replicate using dna crossword clue",
-  "v0 by verce"
+  "v0 by verce",
+  "crushon.ai",
+  "hugging face open llm leaderboard",
+  "is chai ai down",
+  "apps like chai ai but free",
+  "eminem tyler the creator diss"
  ]
 }
