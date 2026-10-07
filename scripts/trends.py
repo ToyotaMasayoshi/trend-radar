@@ -23,12 +23,16 @@ import urllib.parse
 import urllib.request
 
 BASE = "https://trends.google.com/trends/api/"
-REQUEST_DELAY = 2.0  # seconds between requests; pacing, not evasion
-MAX_RETRIES = 2
+REQUEST_DELAY = 5.0  # plus 0-1s jitter; pacing, not evasion
+MAX_RETRIES = 1
 
 
 class RateLimited(RuntimeError):
     """Google Trends returned HTTP 429. Stop the round."""
+
+
+class RequestBudgetExceeded(RuntimeError):
+    """The per-run Google request cap was reached."""
 
 
 def _google_json(payload: bytes) -> dict:
@@ -38,11 +42,13 @@ def _google_json(payload: bytes) -> dict:
 
 
 class TrendsClient:
-    def __init__(self, delay: float = REQUEST_DELAY, retries: int = MAX_RETRIES) -> None:
+    def __init__(self, delay: float = REQUEST_DELAY, retries: int = MAX_RETRIES,
+                 max_requests: int | None = None) -> None:
         jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
         self.delay = delay
         self.retries = retries
+        self.max_requests = max_requests
         self.requests = 0
         request = urllib.request.Request("https://www.google.com/", headers={
             "User-Agent": "Mozilla/5.0 (compatible; TrendRadar/1.0)",
@@ -53,6 +59,9 @@ class TrendsClient:
     def _read(self, request: urllib.request.Request, label: str) -> bytes:
         """Read once, with bounded 429 retries that respect Retry-After."""
         for attempt in range(self.retries + 1):
+            max_requests = getattr(self, "max_requests", None)
+            if max_requests is not None and self.requests >= max_requests:
+                raise RequestBudgetExceeded("Google request budget exhausted")
             self.requests += 1
             try:
                 with self.opener.open(request, timeout=25) as response:
@@ -66,8 +75,8 @@ class TrendsClient:
                 try:
                     wait = float(retry_after)
                 except (TypeError, ValueError):
-                    wait = 4 * (2 ** attempt) + random.uniform(0.2, 1.0)
-                time.sleep(min(60, max(1, wait)))
+                    wait = 60 * (attempt + 1) + random.uniform(0, 5)
+                time.sleep(max(1, wait))
         raise AssertionError("unreachable")
 
     def get(self, path: str, params: dict) -> dict:
@@ -79,7 +88,7 @@ class TrendsClient:
         })
         result = _google_json(self._read(request, "Google Trends"))
         if self.delay:
-            time.sleep(self.delay)
+            time.sleep(self.delay + random.uniform(0, 1))
         return result
 
     def _explore(self, keywords: list, timeframe: str) -> list:
@@ -108,26 +117,32 @@ class TrendsClient:
 
     # -- public API ------------------------------------------------------
 
-    def related_rising(self, root: str, timeframe: str) -> list:
-        """Related *rising* queries for one root in one window.
-
-        Returns rows: {"query", "growth" (percent int or None), "breakout" (bool)}.
-        """
-        widgets = self._explore([root], timeframe)
-        payload = self._widget(widgets, "RELATED_QUERIES", "relatedsearches")
-        ranked = payload.get("default", {}).get("rankedList", [])
-        rows = ranked[1].get("rankedKeyword", []) if len(ranked) > 1 else []
-        out = []
-        for row in rows:
-            query = (row.get("query") or "").strip()
-            if not query:
-                continue
-            out.append({
-                "query": query,
-                "growth": row.get("value"),       # int percent, or None
-                "breakout": row.get("value") is None or str(row.get("formattedValue", "")).lower() == "breakout",
+    def related_rising_many(self, roots: list[str], timeframe: str) -> dict[str, list]:
+        """Related rising queries for up to four roots, sharing one explore call."""
+        widgets = [w for w in self._explore(roots, timeframe)
+                   if w.get("id") == "RELATED_QUERIES"]
+        result = {root: [] for root in roots}
+        # Google returns one RELATED_QUERIES widget per comparison item, in order.
+        for root, widget in zip(roots, widgets):
+            payload = self.get("widgetdata/relatedsearches", {
+                "hl": "en-US", "tz": "0",
+                "req": json.dumps(widget["request"], ensure_ascii=False,
+                                  separators=(",", ":")),
+                "token": widget["token"],
             })
-        return out
+            ranked = payload.get("default", {}).get("rankedList", [])
+            rows = ranked[1].get("rankedKeyword", []) if len(ranked) > 1 else []
+            result[root] = [{
+                "query": (row.get("query") or "").strip(),
+                "growth": row.get("value"),
+                "breakout": row.get("value") is None
+                or str(row.get("formattedValue", "")).lower() == "breakout",
+            } for row in rows if (row.get("query") or "").strip()]
+        return result
+
+    def related_rising(self, root: str, timeframe: str) -> list:
+        """Backward-compatible single-root wrapper."""
+        return self.related_rising_many([root], timeframe)[root]
 
     def timeline(self, keywords: list, timeframe: str) -> dict:
         """Interest-over-time for keywords in one window.

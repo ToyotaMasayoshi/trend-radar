@@ -2,7 +2,8 @@
 """Collect Google Trends related rising queries, review history, classify.
 
 Pipeline (methodology inferred from the reference daily reports):
-  1. For each root: related rising queries in `now 7-d` and `now 1-d` (global).
+  1. For each root: related rising queries in alternating `now 7-d` / `now 1-d`
+     rounds, four roots per shared explore request.
   2. Candidate pool = ALL rising queries after normalized dedup
      (Breakout or growth >= 1000% is only a display subset, not the gate).
   3. Pre-filter the review queue by intent/root relevance, then review with
@@ -34,7 +35,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from trends import RateLimited, TrendsClient
+from trends import RateLimited, RequestBudgetExceeded, TrendsClient
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE_FILE = ROOT / "state" / "state.json"
@@ -42,9 +43,10 @@ STATE_FILE = ROOT / "state" / "state.json"
 WINDOWS = ("now 7-d", "now 1-d")
 ROOTS_PER_RUN = max(1, int(os.getenv("ROOTS_PER_RUN", "12")))
 REVIEW_REQUEST_BUDGET = max(4, int(os.getenv("REVIEW_REQUEST_BUDGET", "40")))
+TOTAL_REQUEST_BUDGET = max(8, int(os.getenv("TOTAL_REQUEST_BUDGET", "20")))
+ROOT_BATCH_SIZE = 4
 BACKLOG_THRESHOLD = 50
 BACKLOG_ROOT_LIMIT = 12
-BACKLOG_REVIEW_BUDGET = 64
 HIGH_RISE_CUT = 1000  # percent; display subset only
 ENTERTAINMENT_MARKERS = (
     "game", "games", "gaming", "roblox", "wordle", "quiz", "puzzle",
@@ -253,32 +255,38 @@ def classify(yearly: list, monthly: list, weekly: list, weekly_gpts: list,
 # -- collection ----------------------------------------------------------
 
 def collect_roots(client: TrendsClient, roots: list, state: dict,
-                  limit: int, force: bool) -> tuple[int, int, bool]:
+                  limit: int, force: bool, window: str = WINDOWS[0],
+                  request_cap: int = TOTAL_REQUEST_BUDGET) -> tuple[int, int, bool]:
     """Refresh up to `limit` roots, oldest-updated first. Returns
     (refreshed, rising_rows, rate_limited)."""
     cached = state.setdefault("roots", {})
-    order = sorted(roots, key=lambda r: cached.get(r, {}).get("updated", ""))
+    order = sorted(roots, key=lambda r: cached.get(r, {}).get(
+        "updated_by_window", {}).get(window, cached.get(r, {}).get("updated", "")))
     refreshed, rising = 0, 0
-    for root in order:
-        if refreshed >= limit and not force:
+    for start in range(0, min(limit, len(order)), ROOT_BATCH_SIZE):
+        batch = order[start:start + ROOT_BATCH_SIZE]
+        if client.requests + 1 + len(batch) > request_cap:
             break
-        if refreshed >= limit:
-            break
-        record = {"updated": iso_now(), "windows": {}}
         try:
-            for window in WINDOWS:
-                rows = client.related_rising(root, window)
-                record["windows"][window] = [
+            results = client.related_rising_many(batch, window)
+            now = iso_now()
+            for root in batch:
+                rows = results.get(root, [])
+                record = cached.setdefault(root, {"updated": "", "windows": {}})
+                record.setdefault("windows", {})[window] = [
                     {"q": r["query"], "growth": r["growth"],
                      "breakout": r["breakout"],
                      "formatted": fmt_growth(r["growth"], r["breakout"])}
                     for r in rows
                 ]
+                record["updated"] = now
+                record.setdefault("updated_by_window", {})[window] = now
                 rising += len(rows)
+                refreshed += 1
         except RateLimited:
             return refreshed, rising, True
-        cached[root] = record
-        refreshed += 1
+        except RequestBudgetExceeded:
+            break
     return refreshed, rising, False
 
 
@@ -323,52 +331,68 @@ def review_candidates(client: TrendsClient, candidates: list, state: dict,
     start_requests = client.requests
     reviewed = 0
 
-    def fetch(slot: str, term: str, timeframe: str, keywords: list[str], work: dict) -> bool:
-        if slot in work:
+    def fetch(slot: str, timeframe: str, entries: list[tuple[str, dict]],
+              reference: str | None = None) -> bool:
+        missing = [(term, windows) for term, windows in entries if slot not in windows]
+        if not missing:
             return True
         if client.requests - start_requests + 2 > request_budget:
             return False
-        result = client.timeline(keywords, timeframe)
-        work[slot] = result
+        terms = [term for term, _ in missing]
+        result = client.timeline(terms + ([reference] if reference else []), timeframe)
+        for term, windows in missing:
+            windows[slot] = {term: result.get(term, [])}
+            if reference:
+                windows[slot][reference] = result.get(reference, [])
         return True
 
     try:
-        for cand in pending:
-            display_term = cand["q"]
-            key = normalize(display_term)
-            work = progress.setdefault(key, {"q": display_term, "windows": {}})
-            term = work["q"]  # keep persisted series keys stable across casing variants
-            windows = work["windows"]
-            if not fetch("yearly", term, "today 12-m", [term], windows):
+        for start in range(0, len(pending), 4):
+            group = pending[start:start + 4]
+            items = []
+            for cand in group:
+                key = normalize(cand["q"])
+                work = progress.setdefault(key, {"q": cand["q"], "windows": {}})
+                items.append((cand, key, work["q"], work["windows"]))
+            entries = [(term, windows) for _, _, term, windows in items]
+            if not fetch("yearly", "today 12-m", entries):
                 break
-            if not fetch("five_year", term, "today 5-y", [term], windows):
+            if not fetch("five_year", "today 5-y", entries):
                 break
-            yearly = windows["yearly"].get(term, [])
-            five_year = windows["five_year"].get(term, [])
-            preliminary = classify(yearly, [], [], [], five_year)
-            monthly = []
-            if preliminary["verdict"] == "revived":
-                if not fetch("monthly", term, "today 1-m", [term], windows):
-                    break
-                monthly = windows["monthly"].get(term, [])
-            weekly, weekly_gpts = [], []
-            if preliminary["verdict"] in {"new", "revived"}:
-                if not fetch("weekly", term, "now 7-d", [term, "gpts"], windows):
-                    break
-                weekly = windows["weekly"].get(term, [])
-                weekly_gpts = windows["weekly"].get("gpts", [])
-            result = classify(yearly, monthly, weekly, weekly_gpts, five_year)
-            result.update({
-                "q": display_term, "reviewed_at": iso_now(),
-                "growth": cand["growth"], "breakout": cand["breakout"],
-                "formatted": cand["formatted"],
-                "roots": cand["roots"], "windows": cand["windows"],
-            })
-            reviews[key] = result
-            progress.pop(key, None)
-            reviewed += 1
+            preliminary = {
+                key: classify(windows["yearly"].get(term, []), [], [], [],
+                              windows["five_year"].get(term, []))
+                for _, key, term, windows in items
+            }
+            revived = [(term, windows) for _, key, term, windows in items
+                       if preliminary[key]["verdict"] == "revived"]
+            comparable = [(term, windows) for _, key, term, windows in items
+                          if preliminary[key]["verdict"] in {"new", "revived"}]
+            if not fetch("monthly", "today 1-m", revived):
+                break
+            if not fetch("weekly", "now 7-d", comparable, "gpts"):
+                break
+            for cand, key, term, windows in items:
+                result = classify(
+                    windows["yearly"].get(term, []),
+                    windows.get("monthly", {}).get(term, []),
+                    windows.get("weekly", {}).get(term, []),
+                    windows.get("weekly", {}).get("gpts", []),
+                    windows["five_year"].get(term, []),
+                )
+                result.update({
+                    "q": cand["q"], "reviewed_at": iso_now(),
+                    "growth": cand["growth"], "breakout": cand["breakout"],
+                    "formatted": cand["formatted"],
+                    "roots": cand["roots"], "windows": cand["windows"],
+                })
+                reviews[key] = result
+                progress.pop(key, None)
+                reviewed += 1
     except RateLimited:
         return reviewed, True
+    except RequestBudgetExceeded:
+        pass
     return reviewed, False
 
 
@@ -381,7 +405,11 @@ def main() -> int:
 
     roots = json.loads((ROOT / "state" / "roots.json").read_text(encoding="utf-8"))["roots"]
     state = load_json(STATE_FILE, {"roots": {}, "reviews": {}})
-    client = TrendsClient()
+    previous_meta = state.get("meta", {})
+    window = previous_meta.get("next_window", WINDOWS[0])
+    if window not in WINDOWS:
+        window = WINDOWS[0]
+    client = TrendsClient(max_requests=TOTAL_REQUEST_BUDGET)
     rate_limited = False
 
     candidates = build_candidates(state)
@@ -391,12 +419,13 @@ def main() -> int:
                     and args.root_limit == ROOTS_PER_RUN
                     and args.review_budget == REVIEW_REQUEST_BUDGET)
     root_limit = BACKLOG_ROOT_LIMIT if backlog_mode else args.root_limit
-    review_budget = BACKLOG_REVIEW_BUDGET if backlog_mode else args.review_budget
     # Refresh roots first: review backlog must not starve daily discovery.
-    refreshed, rising, hit = collect_roots(client, roots, state, root_limit, args.force)
+    refreshed, rising, hit = collect_roots(
+        client, roots, state, root_limit, args.force, window, TOTAL_REQUEST_BUDGET)
     rate_limited |= hit
     candidates = build_candidates(state)
     reviewed = 0
+    review_budget = min(args.review_budget, max(0, TOTAL_REQUEST_BUDGET - client.requests))
     if not rate_limited:
         reviewed, hit = review_candidates(client, candidates, state, review_budget)
         rate_limited |= hit
@@ -407,7 +436,11 @@ def main() -> int:
                      "rate_limited": rate_limited, "reviewed_this_run": reviewed,
                      "review_request_budget": review_budget,
                      "root_limit": root_limit, "backlog_mode": backlog_mode,
-                     "eligible_pending": eligible_pending}
+                     "eligible_pending": eligible_pending,
+                     "collection_window": window,
+                     "next_window": window if rate_limited and refreshed < root_limit
+                     else WINDOWS[1 - WINDOWS.index(window)],
+                     "total_request_budget": TOTAL_REQUEST_BUDGET}
     save_json(STATE_FILE, state)
     if not (refreshed or reviewed):
         print("No fresh root evidence; keeping the last successful output")

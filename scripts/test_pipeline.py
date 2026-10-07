@@ -214,10 +214,57 @@ def test_cluster_history_stable_id():
 
 def test_rate_limited_stops():
     class DeadClient:
-        def related_rising(self, root, window):
+        requests = 0
+
+        def related_rising_many(self, roots, window):
             raise RateLimited("429")
     refreshed, rising, hit = collect_roots(DeadClient(), ["ai"], {}, 526, True)
     check("429: stops round, reports flag", hit and refreshed == 0 and rising == 0)
+
+
+def test_root_and_history_batching():
+    class RootClient:
+        requests = 1
+        calls = []
+
+        def related_rising_many(self, roots, window):
+            self.calls.append((roots, window))
+            self.requests += 1 + len(roots)
+            return {root: [{"query": root + " signal", "growth": 1000,
+                            "breakout": False}] for root in roots}
+
+    state = {"roots": {"alpha": {"updated": "old", "windows": {
+        "now 1-d": [{"q": "kept", "growth": 1, "breakout": False,
+                     "formatted": "+1%"}]}}}}
+    root_client = RootClient()
+    refreshed, _, limited = collect_roots(
+        root_client, ["alpha", "beta", "gamma", "delta"], state, 4, False,
+        "now 7-d", 20)
+    check("roots: four roots share one explore batch",
+          refreshed == 4 and not limited and len(root_client.calls) == 1)
+    check("roots: alternating window preserves prior window",
+          state["roots"]["alpha"]["windows"]["now 1-d"][0]["q"] == "kept")
+
+    class HistoryClient:
+        requests = 0
+        calls = []
+
+        def timeline(self, keywords, timeframe):
+            self.calls.append((list(keywords), timeframe))
+            self.requests += 2
+            values = ([0] * 46 + [0, 0, 0, 0, 80, 100]
+                      if timeframe == "today 12-m" else [0] * 260
+                      if timeframe == "today 5-y" else [10] * 7)
+            return {keyword: pts(values) for keyword in keywords}
+
+    candidates = [{"q": f"term{i} signal", "growth": None, "breakout": True,
+                   "formatted": "飙升", "roots": [f"term{i}"],
+                   "windows": ["now 7-d"]} for i in range(4)]
+    history_client = HistoryClient()
+    reviewed, limited = review_candidates(history_client, candidates, {}, 6)
+    check("history: four candidates share timeline requests",
+          reviewed == 4 and not limited
+          and [len(call[0]) for call in history_client.calls] == [4, 4, 5])
 
 
 def test_trends_client_warms_google_session():
