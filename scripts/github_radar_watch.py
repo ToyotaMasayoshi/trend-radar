@@ -43,10 +43,19 @@ FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
                              "something went wrong"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
+# Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
+# he does not build model-info sites; vendor models are not implementable).
+# Exception: a model confirmed to have a free tier / free API may be added
+# manually by the user (manual source bypasses this filter).
+VENDOR_MODEL_SUBSTRINGS = ["gpt", "chatgpt", "openai", "gemini", "gemma",
+                           "claude", "anthropic", "grok", "hunyuan",
+                           "leonardo", "copilot", "midjourney"]
 
 
 def _feedback_noise(q: str) -> bool:
     if any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS):
+        return True
+    if any(s in q for s in VENDOR_MODEL_SUBSTRINGS):
         return True
     if any(q.startswith(p) for p in FEEDBACK_NOISE_PREFIXES):
         return True
