@@ -401,10 +401,18 @@ def main() -> int:
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--root-limit", type=int, default=ROOTS_PER_RUN)
     parser.add_argument("--review-budget", type=int, default=REVIEW_REQUEST_BUDGET)
+    parser.add_argument("--state-file", type=Path, default=STATE_FILE)
+    parser.add_argument("--roots-file", type=Path, default=ROOT / "state" / "roots.json")
+    parser.add_argument("--shard-count", type=int, default=1)
+    parser.add_argument("--shard-index", type=int, default=0)
+    parser.add_argument("--collector-id", default="github")
     args = parser.parse_args()
 
-    roots = json.loads((ROOT / "state" / "roots.json").read_text(encoding="utf-8"))["roots"]
-    state = load_json(STATE_FILE, {"roots": {}, "reviews": {}})
+    if args.shard_count < 1 or not 0 <= args.shard_index < args.shard_count:
+        parser.error("shard-index must be between 0 and shard-count - 1")
+    all_roots = json.loads(args.roots_file.read_text(encoding="utf-8"))["roots"]
+    roots = all_roots[args.shard_index::args.shard_count]
+    state = load_json(args.state_file, {"roots": {}, "reviews": {}})
     previous_meta = state.get("meta", {})
     window = previous_meta.get("next_window", WINDOWS[0])
     if window not in WINDOWS:
@@ -440,8 +448,11 @@ def main() -> int:
                      "collection_window": window,
                      "next_window": window if rate_limited and refreshed < root_limit
                      else WINDOWS[1 - WINDOWS.index(window)],
-                     "total_request_budget": TOTAL_REQUEST_BUDGET}
-    save_json(STATE_FILE, state)
+                     "total_request_budget": TOTAL_REQUEST_BUDGET,
+                     "collector_id": args.collector_id,
+                     "shard_index": args.shard_index,
+                     "shard_count": args.shard_count}
+    save_json(args.state_file, state)
     if not (refreshed or reviewed):
         print("No fresh root evidence; keeping the last successful output")
 

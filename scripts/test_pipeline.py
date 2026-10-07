@@ -19,6 +19,7 @@ from collect import (build_candidates, classify, collect_roots, is_entertainment
 from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
 import github_radar_watch
+from merge_nodes import merge_state
 import report
 import verify_spread
 
@@ -276,6 +277,22 @@ def test_root_and_history_batching():
     check("history: four candidates share timeline requests",
           reviewed == 4 and not limited
           and [len(call[0]) for call in history_client.calls] == [4, 4, 5])
+
+
+def test_local_node_merge_prefers_newer_records():
+    state = {"roots": {"alpha": {"updated": "2026-10-07T01:00:00Z"}},
+             "reviews": {}}
+    changed = merge_state(state, {
+        "roots": {
+            "alpha": {"updated": "2026-10-07T00:00:00Z"},
+            "beta": {"updated": "2026-10-07T02:00:00Z"},
+        },
+        "reviews": {"signal": {"reviewed_at": "2026-10-07T02:00:00Z"}},
+    })
+    check("nodes: merge adds deltas without replacing newer primary data",
+          changed == 2 and state["roots"]["alpha"]["updated"]
+          == "2026-10-07T01:00:00Z" and "beta" in state["roots"]
+          and "signal" in state["reviews"])
 
 
 def test_trends_client_warms_google_session():
