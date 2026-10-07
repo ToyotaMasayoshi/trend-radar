@@ -6,8 +6,8 @@
   "github-radar:2026-10-06",
   "github-radar:2026-10-07"
  ],
- "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 598,
+ "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
+ "count": 547,
  "roots": [
   "ai",
   "ai generator",
@@ -550,7 +550,12 @@
   "ai essay writer with citations",
   "latent sync",
   "huashu art motion",
-  "muse skills"
+  "muse skills",
+  "runway gen-4",
+  "replicate using dna crossword clue",
+  "genspark ai workspace 4.0",
+  "runway gen-2 free",
+  "v0 by verce"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1094,7 +1099,12 @@
   "ai essay writer with citations": "feedback",
   "latent sync": "feedback",
   "huashu art motion": "github-radar",
-  "muse skills": "github-radar"
+  "muse skills": "github-radar",
+  "runway gen-4": "feedback",
+  "replicate using dna crossword clue": "feedback",
+  "genspark ai workspace 4.0": "feedback",
+  "runway gen-2 free": "feedback",
+  "v0 by verce": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1638,7 +1648,12 @@
   "ai essay writer with citations": "2026-10-06",
   "latent sync": "2026-10-06",
   "huashu art motion": "2026-10-06",
-  "muse skills": "2026-10-06"
+  "muse skills": "2026-10-06",
+  "runway gen-4": "2026-10-07",
+  "replicate using dna crossword clue": "2026-10-07",
+  "genspark ai workspace 4.0": "2026-10-07",
+  "runway gen-2 free": "2026-10-07",
+  "v0 by verce": "2026-10-07"
  },
  "marks": {},
  "root_blocklist": [
