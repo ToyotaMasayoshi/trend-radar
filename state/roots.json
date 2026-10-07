@@ -7,7 +7,7 @@
     "github-radar:2026-10-07"
   ],
   "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
-  "count": 543,
+  "count": 540,
   "roots": [
     "ai",
     "ai generator",
@@ -530,13 +530,11 @@
     "ai equity research from sec filings",
     "batch photo editor for ai images",
     "ai transparent video workflow",
-    "personal voice clone fine-tuning",
     "ai answer engine optimization",
     "consistent character comic generator",
     "citation-checking ai research agent",
     "ai hotel booking assistant",
     "ai appointment booking agent",
-    "free lora trainer",
     "ai consistent character video generator",
     "agent-native knowledge base",
     "ai job application agent",
@@ -550,8 +548,7 @@
     "instinct ai email writer",
     "addys ai",
     "audio-based video editing agent",
-    "fasth3",
-    "redetail 2.0 4k upscale"
+    "fasth3"
   ],
   "root_sources": {
     "ai": "reference",
@@ -1088,13 +1085,11 @@
     "ai equity research from sec filings": "reddit-ai",
     "batch photo editor for ai images": "reddit-ai",
     "ai transparent video workflow": "reddit-ai",
-    "personal voice clone fine-tuning": "reddit-ai",
     "ai answer engine optimization": "reddit-ai",
     "consistent character comic generator": "reddit-ai",
     "citation-checking ai research agent": "reddit-ai",
     "ai hotel booking assistant": "reddit-ai",
     "ai appointment booking agent": "reddit-ai",
-    "free lora trainer": "reddit-ai",
     "ai consistent character video generator": "reddit-ai",
     "agent-native knowledge base": "reddit-ai",
     "ai job application agent": "reddit-ai",
@@ -1108,8 +1103,7 @@
     "instinct ai email writer": "reddit-ai",
     "addys ai": "reddit-ai",
     "audio-based video editing agent": "reddit-ai",
-    "fasth3": "reddit-ai",
-    "redetail 2.0 4k upscale": "reddit-ai"
+    "fasth3": "reddit-ai"
   },
   "root_added_at": {
     "ai": "2026-10-05",
@@ -1646,13 +1640,11 @@
     "ai equity research from sec filings": "2026-10-07T15:38:29.373298+00:00",
     "batch photo editor for ai images": "2026-10-07T15:38:29.373298+00:00",
     "ai transparent video workflow": "2026-10-07T15:38:29.373298+00:00",
-    "personal voice clone fine-tuning": "2026-10-07T15:38:29.373298+00:00",
     "ai answer engine optimization": "2026-10-07T15:38:29.373298+00:00",
     "consistent character comic generator": "2026-10-07T15:38:29.373298+00:00",
     "citation-checking ai research agent": "2026-10-07T15:38:29.373298+00:00",
     "ai hotel booking assistant": "2026-10-07T15:38:29.373298+00:00",
     "ai appointment booking agent": "2026-10-07T15:38:29.373298+00:00",
-    "free lora trainer": "2026-10-07T15:38:29.373298+00:00",
     "ai consistent character video generator": "2026-10-07T15:38:29.373298+00:00",
     "agent-native knowledge base": "2026-10-07T15:38:29.373298+00:00",
     "ai job application agent": "2026-10-07T15:38:29.373298+00:00",
@@ -1666,8 +1658,7 @@
     "instinct ai email writer": "2026-10-07T15:39:33.030555+00:00",
     "addys ai": "2026-10-07T15:39:33.030555+00:00",
     "audio-based video editing agent": "2026-10-07T15:39:33.030555+00:00",
-    "fasth3": "2026-10-07T15:39:33.030555+00:00",
-    "redetail 2.0 4k upscale": "2026-10-07T15:39:33.030555+00:00"
+    "fasth3": "2026-10-07T15:39:33.030555+00:00"
   },
   "marks": {},
   "root_blocklist": [
@@ -1802,6 +1793,9 @@
     "trump approval by state tracker",
     "google ai model",
     "google new ai",
-    "mistral chonk"
+    "mistral chonk",
+    "free lora trainer",
+    "redetail 2.0 4k upscale",
+    "personal voice clone fine-tuning"
   ]
 }
