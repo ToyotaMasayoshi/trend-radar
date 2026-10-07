@@ -37,6 +37,7 @@ DAILY_JSON_URL = "https://trend-radar-eif.pages.dev/data/daily.json"
 FEEDBACK_VERDICTS = {"new", "revived"}
 # noise that must never become roots (same rules as the email noise filter)
 FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
+                             "merger",  # corporate/entertainment merger news
                              # AI error messages that trend as queries
                              "i wasn't able", "i'm sorry", "as an ai",
                              "i cannot", "unable to generate", "error on my side",
