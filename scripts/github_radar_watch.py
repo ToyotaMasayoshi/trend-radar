@@ -50,13 +50,17 @@ FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # manually by the user (manual source bypasses this filter).
 VENDOR_MODEL_SUBSTRINGS = ["gpt", "chatgpt", "openai", "gemini", "gemma",
                            "claude", "anthropic", "grok", "hunyuan",
-                           "leonardo", "copilot", "midjourney"]
+                           "leonardo", "copilot", "midjourney", "google ai"]
+
+
+def is_vendor_model_term(q: str) -> bool:
+    return any(s in q.lower() for s in VENDOR_MODEL_SUBSTRINGS)
 
 
 def _feedback_noise(q: str) -> bool:
     if any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS):
         return True
-    if any(s in q for s in VENDOR_MODEL_SUBSTRINGS):
+    if is_vendor_model_term(q):
         return True
     if any(q.startswith(p) for p in FEEDBACK_NOISE_PREFIXES):
         return True
@@ -121,6 +125,67 @@ def repo_to_roots(repo: dict) -> list[str]:
 
 def load_roots(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _github_contents_api(method: str, body: dict | None = None):
+    """Raw Contents-API call for state/roots.json. No raw creds printed."""
+    sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
+    from dynamic_credentials import add_surrogate_to_request, read_json_response
+
+    req = urllib.request.Request(
+        "https://api.github.com/repos/ToyotaMasayoshi/trend-radar/contents/state/roots.json",
+        method=method,
+    )
+    data = None
+    if body is not None:
+        data = json.dumps(body).encode()
+        req.add_header("Content-Type", "application/json")
+    add_surrogate_to_request(req, "custom.github", allowed_hosts=["api.github.com"])
+    req.data = data
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return r.status, read_json_response(r)
+    except urllib.error.HTTPError as e:
+        return e.code, {"message": e.read().decode("utf-8", "replace")[:200]}
+
+
+def fetch_github_roots() -> dict | None:
+    """Download the current state/roots.json from GitHub. None on failure."""
+    try:
+        status, cur = _github_contents_api("GET")
+        if status != 200:
+            return None
+        return json.loads(base64.b64decode(cur["content"]).decode("utf-8"))
+    except Exception:  # noqa: BLE001 - never break the cron
+        return None
+
+
+def merge_stores(remote: dict, local: dict) -> dict:
+    """GitHub copy is authoritative; keep local-only roots not yet pushed.
+
+    Prevents the hourly push from wiping out API-side edits (e.g. manual
+    root removals) made after the local file went stale.
+    """
+    r_roots = list(remote.get("roots", []))
+    r_norm = {norm(r) for r in r_roots}
+    r_block = {norm(t) for t in (remote.get("root_blocklist") or [])}
+    for r in local.get("roots", []):
+        if norm(r) not in r_norm and norm(r) not in r_block:
+            r_roots.append(r)
+    remote["roots"] = r_roots
+    remote["count"] = len(r_roots)
+    bl = list(remote.get("root_blocklist") or [])
+    bl_norm = {norm(t) for t in bl}
+    for t in local.get("root_blocklist") or []:
+        if norm(t) not in bl_norm:
+            bl.append(t)
+            bl_norm.add(norm(t))
+    remote["root_blocklist"] = bl
+    for field in ("root_sources", "root_added_at", "marks"):
+        merged = dict(local.get(field) or {})
+        merged.update(remote.get(field) or {})
+        remote[field] = merged
+    return remote
 
 
 def push_roots(path: Path, message: str) -> bool:
@@ -228,6 +293,14 @@ def main() -> int:
 
     roots_path = Path(args.roots)
     store = load_roots(roots_path)
+    if args.push:
+        # The local file can go stale (API-side edits bypass it); sync from
+        # GitHub before modifying so the push never wipes remote changes.
+        remote = fetch_github_roots()
+        if remote is not None:
+            store = merge_stores(remote, store)
+            roots_path.write_text(json.dumps(store, ensure_ascii=False, indent=1),
+                                  encoding="utf-8")
     existing = {norm(r) for r in store["roots"]}
     new_roots: list[str] = []
     radar_added: list[str] = []
@@ -237,6 +310,10 @@ def main() -> int:
         for repo in top:
             if repo["fullName"] == p["repo"]:
                 for rt in repo_to_roots(repo):
+                    if is_vendor_model_term(rt):
+                        # big-vendor AI model terms are excluded by default
+                        # (user does not build model-info sites); never add
+                        continue
                     if norm(rt) not in existing and norm(rt) not in blocklist:
                         new_roots.append(rt)
                         radar_added.append(rt)
