@@ -7,7 +7,7 @@
     "github-radar:2026-10-07"
   ],
   "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
-  "count": 537,
+  "count": 543,
   "roots": [
     "ai",
     "ai generator",
@@ -545,7 +545,13 @@
     "ai 360 photo upscaler",
     "ai dance transfer to character",
     "ai evidence provenance platform",
-    "ai human handoff software"
+    "ai human handoff software",
+    "jev ai",
+    "instinct ai email writer",
+    "addys ai",
+    "audio-based video editing agent",
+    "fasth3",
+    "redetail 2.0 4k upscale"
   ],
   "root_sources": {
     "ai": "reference",
@@ -1097,7 +1103,13 @@
     "ai 360 photo upscaler": "reddit-ai",
     "ai dance transfer to character": "reddit-ai",
     "ai evidence provenance platform": "reddit-ai",
-    "ai human handoff software": "reddit-ai"
+    "ai human handoff software": "reddit-ai",
+    "jev ai": "reddit-ai",
+    "instinct ai email writer": "reddit-ai",
+    "addys ai": "reddit-ai",
+    "audio-based video editing agent": "reddit-ai",
+    "fasth3": "reddit-ai",
+    "redetail 2.0 4k upscale": "reddit-ai"
   },
   "root_added_at": {
     "ai": "2026-10-05",
@@ -1649,7 +1661,13 @@
     "ai 360 photo upscaler": "2026-10-07T15:38:29.373298+00:00",
     "ai dance transfer to character": "2026-10-07T15:38:29.373298+00:00",
     "ai evidence provenance platform": "2026-10-07T15:38:29.373298+00:00",
-    "ai human handoff software": "2026-10-07T15:38:29.373298+00:00"
+    "ai human handoff software": "2026-10-07T15:38:29.373298+00:00",
+    "jev ai": "2026-10-07T15:39:33.030555+00:00",
+    "instinct ai email writer": "2026-10-07T15:39:33.030555+00:00",
+    "addys ai": "2026-10-07T15:39:33.030555+00:00",
+    "audio-based video editing agent": "2026-10-07T15:39:33.030555+00:00",
+    "fasth3": "2026-10-07T15:39:33.030555+00:00",
+    "redetail 2.0 4k upscale": "2026-10-07T15:39:33.030555+00:00"
   },
   "marks": {},
   "root_blocklist": [
