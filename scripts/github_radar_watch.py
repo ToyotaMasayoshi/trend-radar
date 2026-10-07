@@ -49,12 +49,21 @@ FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Exception: a model confirmed to have a free tier / free API may be added
 # manually by the user (manual source bypasses this filter).
 VENDOR_MODEL_SUBSTRINGS = ["gpt", "chatgpt", "openai", "gemini", "gemma",
-                           "claude", "anthropic", "grok", "hunyuan",
-                           "leonardo", "copilot", "midjourney", "google ai"]
+                           "claude", "anthropic", "grok", "xai", "mistral",
+                           "deepseek", "qwen", "llama", "doubao", "kimi",
+                           "hunyuan",
+                           "leonardo", "copilot", "midjourney", "runway",
+                           "dalle", "dall-e", "stable diffusion"]
 
 
 def is_vendor_model_term(q: str) -> bool:
-    return any(s in q.lower() for s in VENDOR_MODEL_SUBSTRINGS)
+    ql = q.lower()
+    if any(s in ql for s in VENDOR_MODEL_SUBSTRINGS):
+        return True
+    # "google <x> ai/model" style terms, e.g. "google new ai"
+    if "google" in ql and any(w in ql for w in [" ai", "model", "gemini", "gemma"]):
+        return True
+    return False
 
 
 def _feedback_noise(q: str) -> bool:
