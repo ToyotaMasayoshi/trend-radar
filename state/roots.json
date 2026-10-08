@@ -8,7 +8,7 @@
     "github-radar:2026-10-08"
   ],
   "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
-  "count": 592,
+  "count": 581,
   "roots": [
     "ai",
     "ai generator",
@@ -506,7 +506,6 @@
     "fireflies.ai notetaker",
     "ai essay writer with citations",
     "latent sync",
-    "huashu art motion",
     "muse skills",
     "runway gen-2 free",
     "deadlock vote counter",
@@ -519,7 +518,6 @@
     "untitled defense codes",
     "eric cropper",
     "fotor ai photo enhancer",
-    "ai flight price tracker",
     "b2b buyer intelligence agent",
     "visual prompt canvas for ai agents",
     "multi-agent research to slide deck",
@@ -1175,8 +1173,6 @@
     "aeo geo aio optimization": "reddit-ai",
     "ai agent payments": "reddit-ai",
     "clim agent guard": "reddit-ai",
-    "huashu art motion": "github-radar",
-    "ai flight price tracker": "reddit-ai",
     "maca kizi": "feedback"
   },
   "root_added_at": {
@@ -1760,8 +1756,6 @@
     "aeo geo aio optimization": "2026-10-08T04:19:03.932983+00:00",
     "ai agent payments": "2026-10-08T04:19:03.932983+00:00",
     "clim agent guard": "2026-10-08T04:19:03.932983+00:00",
-    "huashu art motion": "2026-10-06",
-    "ai flight price tracker": "2026-10-07T15:38:29.373298+00:00",
     "maca kizi": "2026-10-08"
   },
   "marks": {},
