@@ -63,7 +63,11 @@ HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
                            "fine-tuning", "finetune", "fine tune",
                            "dragonkind", "fourth wing", "pewdiepie",
                            "odysseus", "steal an egg", "enchanted forest",
-                           "ajax"]
+                           "ajax",
+                           # news/politics noise (user deletes on sight)
+                           "trump",
+                           # unfiltered-model queries: model-info direction
+                           "uncensored"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
