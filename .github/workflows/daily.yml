@@ -39,7 +39,9 @@ jobs:
         run: python3 -B scripts/collect.py --shard-count 2 --shard-index 0 --collector-id github
       - run: python3 -B scripts/cluster.py
         if: hashFiles('state/state.json') != ''
-      - run: python3 -B scripts/report.py
+      - name: Build report when fresh data exists
+        continue-on-error: true
+        run: python3 -B scripts/report.py
         if: hashFiles('state/state.json') != ''
       - run: cp state/roots.json site/data/roots.json
         if: hashFiles('state/roots.json') != ''
