@@ -72,7 +72,14 @@ HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
                            "distillation",
                            # saturated utility keywords: entrenched incumbent (e.g. lipsum.com),
                            # no differentiation room — user 2026-10-08: skip, no prospect
-                           "lorem ipsum"]
+                           "lorem ipsum",
+                           # specific AI model names (user 2026-10-07: no model-info
+                           # sites; model names never auto-added). Jev = TypeSafe AI
+                           # decision model (2026-09-15); Clef/Clef-flash = Cloudflare
+                           # open-weight decision models (2026-10-01); Fledge Alpha =
+                           # stealth free LLM on OpenCode Zen. Family-level block so
+                           # permutations ("jev cloudflare", "clef ai", ...) never return.
+                           "jev", "clef", "fledge"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
@@ -101,6 +108,11 @@ def _feedback_noise(q: str) -> bool:
     if any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS):
         return True
     if any(s in q for s in HARD_EXCLUDED_SUBSTRINGS):
+        return True
+    # space-insensitive variant: catches e.g. "dragon kind" (blocklist has
+    # "dragonkind"), "steal an egg" spelled with/without spaces, etc.
+    q_ns = q.replace(" ", "")
+    if any(s.replace(" ", "") in q_ns for s in HARD_EXCLUDED_SUBSTRINGS):
         return True
     if is_vendor_model_term(q):
         return True
@@ -207,6 +219,11 @@ def merge_stores(remote: dict, local: dict) -> dict:
 
     Prevents the hourly push from wiping out API-side edits (e.g. manual
     root removals) made after the local file went stale.
+
+    The blocklist is authoritative for exclusion: anything blocklisted is
+    dropped from the merged root list, so local deletions (which always
+    blacklist) propagate to remote instead of being re-added on the next
+    merge. Orphaned source/added_at/marks entries are pruned.
     """
     r_roots = list(remote.get("roots", []))
     r_norm = {norm(r) for r in r_roots}
@@ -214,19 +231,22 @@ def merge_stores(remote: dict, local: dict) -> dict:
     for r in local.get("roots", []):
         if norm(r) not in r_norm and norm(r) not in r_block:
             r_roots.append(r)
-    remote["roots"] = r_roots
-    remote["count"] = len(r_roots)
     bl = list(remote.get("root_blocklist") or [])
     bl_norm = {norm(t) for t in bl}
     for t in local.get("root_blocklist") or []:
         if norm(t) not in bl_norm:
             bl.append(t)
             bl_norm.add(norm(t))
+    # blocklist wins: a blocklisted root is never in the pool
+    r_roots = [r for r in r_roots if norm(r) not in bl_norm]
+    remote["roots"] = r_roots
+    remote["count"] = len(r_roots)
     remote["root_blocklist"] = bl
+    final = {norm(r) for r in r_roots}
     for field in ("root_sources", "root_added_at", "marks"):
         merged = dict(local.get(field) or {})
         merged.update(remote.get(field) or {})
-        remote[field] = merged
+        remote[field] = {k: v for k, v in merged.items() if norm(k) in final}
     return remote
 
 
