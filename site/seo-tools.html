@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO 工具 · Trend Radar</title>
+<style>
+:root{color-scheme:light;--ink:#18212f;--muted:#667085;--line:#dce2ea;--panel:#fff;--brand:#2563eb;--soft:#eff6ff;--bad:#b42318}
+*{box-sizing:border-box}body{margin:0;background:#f6f8fb;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+main{width:min(1120px,calc(100% - 28px));margin:24px auto 64px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center}
+a{color:var(--brand)}h1{font-size:26px;margin:8px 0}h2{font-size:18px;margin:0 0 12px}.note{color:var(--muted);font-size:13px;line-height:1.55}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 6px 22px rgba(20,35,60,.05)}
+.token-row,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:6px}
+label{font-size:13px;font-weight:650}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;border:1px solid #cfd7e3;border-radius:9px;padding:10px 11px;background:#fff;color:var(--ink)}
+textarea{min-height:100px;resize:vertical}.remember{display:flex;align-items:center;gap:8px;font-weight:400}.remember input{width:auto}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}.tool{display:none}.tool.active{display:block}
+.actions{display:flex;gap:10px;align-items:center;margin-top:14px}.primary{border:0;border-radius:9px;padding:10px 16px;background:var(--brand);color:#fff;cursor:pointer;font-weight:700}
+.primary:disabled{opacity:.55;cursor:wait}.status{font-size:13px;color:var(--muted)}.error{color:var(--bad)}
+.result{display:none}.result.show{display:block}.result-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.badges{display:flex;gap:7px;flex-wrap:wrap}.badge{background:var(--soft);color:#1d4ed8;border-radius:999px;padding:4px 9px;font-size:12px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px;max-height:520px;overflow:auto}
+.table-wrap{overflow:auto;margin-top:14px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top;max-width:320px;overflow-wrap:anywhere}th{background:#f8fafc;position:sticky;top:0}
+.secondary{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;cursor:pointer}
+@media(max-width:700px){.token-row,.grid{grid-template-columns:1fr}.card{padding:16px}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <a href="./">← 返回新词日报</a>
+      <h1>Trend Radar · SEO 工具</h1>
+      <p class="note">先提供三个实际可用的工具。数据通过 Web.Cafe 开放 API 查询，结论、缓存和原工具一致。</p>
+    </div>
+  </div>
+
+  <section class="card">
+    <h2>API 令牌</h2>
+    <div class="token-row">
+      <div class="field">
+        <label for="token">Web.Cafe API Token</label>
+        <input id="token" type="password" autocomplete="off" placeholder="wc_mcp_…">
+      </div>
+      <div class="field">
+        <label for="geo">默认 Google 地区</label>
+        <select id="geo">
+          <option value="us">美国（us）</option><option value="gb">英国（gb）</option>
+          <option value="ca">加拿大（ca）</option><option value="au">澳大利亚（au）</option>
+          <option value="sg">新加坡（sg）</option><option value="jp">日本（jp）</option>
+          <option value="de">德国（de）</option>
+        </select>
+      </div>
+    </div>
+    <p><label class="remember"><input id="remember" type="checkbox">仅在这台浏览器保存令牌</label></p>
+    <p class="note">令牌只会发往 <code>https://seo.web.cafe/api/v1/</code>；勾选后存入本机 localStorage，不写入 Trend Radar、GitHub 或日报。</p>
+  </section>
+
+  <nav class="tabs" aria-label="SEO 工具">
+    <button type="button" data-tab="audit" aria-selected="true">On Page SEO 体检</button>
+    <button type="button" data-tab="ideas" aria-selected="false">关键词拓展</button>
+    <button type="button" data-tab="sitekw" aria-selected="false">站点出词</button>
+  </nav>
+
+  <section class="card tool active" id="audit">
+    <h2>On Page SEO 体检</h2>
+    <p class="note">检查 TDK、关键词布局、标题层级、正文聚焦、图片、链接、Schema 与抓取健康。</p>
+    <form data-tool="onpage_audit">
+      <div class="grid">
+        <div class="field"><label>页面 URL</label><input name="url" type="url" required placeholder="https://example.com/tool"></div>
+        <div class="field"><label>目标关键词</label><input name="keyword" required placeholder="ai image editor"></div>
+      </div>
+      <div class="actions"><button class="primary" type="submit">开始体检</button><span class="status" aria-live="polite"></span></div>
+    </form>
+  </section>
+
+  <section class="card tool" id="ideas">
+    <h2>关键词拓展</h2>
+    <p class="note">输入英文种子词，返回月搜索量、趋势、CPC、竞争度、预筛难度与搜索意图。</p>
+    <form data-tool="keyword_ideas">
+      <div class="grid">
+        <div class="field"><label>英文种子词（换行或逗号分隔，最多 20 个）</label><textarea name="seeds" required placeholder="ai image editor&#10;photo enhancer"></textarea></div>
+        <div class="field">
+          <label>拓展方式</label>
+          <select name="mode"><option value="ideas">同品类</option><option value="suggestions">长尾建议</option><option value="related">相关搜索</option></select>
+          <label>最多返回</label>
+          <select name="limit"><option>25</option><option selected>50</option><option>100</option><option>200</option></select>
+        </div>
+        <div class="field"><label>最低月搜索量（可空）</label><input name="minVolume" type="number" min="0" placeholder="0"></div>
+        <div class="field"><label>最高预筛难度（可空）</label><input name="maxKd" type="number" min="0" max="100" placeholder="不限"></div>
+      </div>
+      <div class="actions"><button class="primary" type="submit">开始拓词</button><span class="status" aria-live="polite"></span></div>
+    </form>
+  </section>
+
+  <section class="card tool" id="sitekw">
+    <h2>站点出词</h2>
+    <p class="note">查询域名或单页在 Google 排名的关键词、位置、搜索量、估算流量、意图与落地页。</p>
+    <form data-tool="site_keywords">
+      <div class="grid">
+        <div class="field"><label>域名或完整页面 URL</label><input name="target" required placeholder="remove.bg 或 https://example.com/tool"></div>
+        <div class="field"><label>排序</label><select name="orderBy"><option value="etv">估算流量</option><option value="volume">搜索量</option><option value="position">排名位置</option></select></div>
+        <div class="field"><label>最多返回</label><select name="limit"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></div>
+      </div>
+      <div class="actions"><button class="primary" type="submit">查询排名词</button><span class="status" aria-live="polite"></span></div>
+    </form>
+  </section>
+
+  <section class="card result" id="result" aria-live="polite">
+    <div class="result-head"><h2>查询结果</h2><div class="badges" id="badges"></div></div>
+    <div id="markdown"></div>
+    <div class="table-wrap" id="tableWrap"></div>
+    <details><summary>查看原始 JSON</summary><pre id="raw"></pre></details>
+  </section>
+</main>
+<script>
+(function(){
+  "use strict";
+  var API="https://seo.web.cafe/api/v1/";
+  var saved=localStorage.getItem("trend-radar-webcafe-token")||"";
+  var token=document.getElementById("token");
+  var remember=document.getElementById("remember");
+  token.value=saved; remember.checked=Boolean(saved);
+  document.querySelectorAll(".tabs button").forEach(function(button){
+    button.addEventListener("click",function(){
+      document.querySelectorAll(".tabs button").forEach(function(x){x.setAttribute("aria-selected","false");});
+      document.querySelectorAll(".tool").forEach(function(x){x.classList.remove("active");});
+      button.setAttribute("aria-selected","true");
+      document.getElementById(button.dataset.tab).classList.add("active");
+    });
+  });
+  document.querySelectorAll("form[data-tool]").forEach(function(form){
+    form.addEventListener("submit",function(event){event.preventDefault();run(form);});
+  });
+  function list(value){return value.split(/[\n,，]+/).map(function(x){return x.trim();}).filter(Boolean);}
+  function bodyFor(form){
+    var data=new FormData(form), tool=form.dataset.tool, body={};
+    if(tool==="onpage_audit") body={url:data.get("url").trim(),keyword:data.get("keyword").trim()};
+    if(tool==="keyword_ideas"){
+      body={seeds:list(data.get("seeds")),mode:data.get("mode"),gl:document.getElementById("geo").value,hl:"en",limit:Number(data.get("limit"))};
+      if(data.get("minVolume")!=="") body.minVolume=Number(data.get("minVolume"));
+      if(data.get("maxKd")!=="") body.maxKd=Number(data.get("maxKd"));
+    }
+    if(tool==="site_keywords") body={target:data.get("target").trim(),gl:document.getElementById("geo").value,hl:"en",orderBy:data.get("orderBy"),limit:Number(data.get("limit"))};
+    return body;
+  }
+  async function run(form){
+    var key=token.value.trim(), status=form.querySelector(".status"), button=form.querySelector(".primary");
+    if(!key){status.textContent="请先填写 API 令牌。";status.className="status error";token.focus();return;}
+    if(remember.checked) localStorage.setItem("trend-radar-webcafe-token",key); else localStorage.removeItem("trend-radar-webcafe-token");
+    status.textContent="查询中…";status.className="status";button.disabled=true;
+    try{
+      var response=await fetch(API+form.dataset.tool,{method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify(bodyFor(form))});
+      var payload=await response.json().catch(function(){return {ok:false,error:"接口返回了无法解析的内容"};});
+      if(!response.ok||payload.ok===false) throw new Error(errorMessage(response.status,payload));
+      render(payload);
+      status.textContent="完成";document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"});
+    }catch(error){status.textContent=error.message;status.className="status error";}
+    finally{button.disabled=false;}
+  }
+  function errorMessage(status,payload){
+    if(status===401) return "令牌无效或已重置。";
+    if(status===402) return "积分不足，接口没有执行。";
+    if(status===429) return payload.code==="day_cap"?"今日额度已用完。":"调用过快，请稍后重试。";
+    if(status>=500) return "上游数据源暂时不可用，本次通常会自动退回积分。";
+    return payload.error||payload.message||("请求失败（HTTP "+status+"）");
+  }
+  function esc(value){return String(value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function simple(value){
+    if(value===null||value===undefined) return "—";
+    if(typeof value==="object") return JSON.stringify(value);
+    return String(value);
+  }
+  function rowsFrom(data){
+    if(!data||typeof data!=="object") return [];
+    var preferred=["items","keywords","results","checks","pages"];
+    for(var i=0;i<preferred.length;i++) if(Array.isArray(data[preferred[i]])) return data[preferred[i]];
+    var arrays=Object.keys(data).filter(function(k){return Array.isArray(data[k]);});
+    return arrays.length?data[arrays[0]]:[];
+  }
+  function render(payload){
+    var result=document.getElementById("result"), badges=document.getElementById("badges");
+    result.classList.add("show");
+    badges.innerHTML="";
+    [["工具",payload.tool],["本次积分",payload.credits&&payload.credits.charged],["请求",payload.requestId]].forEach(function(pair){
+      if(pair[1]!==undefined&&pair[1]!==null){var span=document.createElement("span");span.className="badge";span.textContent=pair[0]+"："+pair[1];badges.appendChild(span);}
+    });
+    var md=document.getElementById("markdown");md.innerHTML="";
+    if(payload.markdown){var pre=document.createElement("pre");pre.textContent=payload.markdown;md.appendChild(pre);}
+    var rows=rowsFrom(payload.data), wrap=document.getElementById("tableWrap");wrap.innerHTML="";
+    if(rows.length&&typeof rows[0]==="object"){
+      var cols=Array.from(rows.reduce(function(set,row){Object.keys(row).forEach(function(k){set.add(k);});return set;},new Set())).slice(0,12);
+      var button=document.createElement("button");button.className="secondary";button.type="button";button.textContent="下载 CSV";button.onclick=function(){downloadCsv(rows,cols);};wrap.appendChild(button);
+      var table=document.createElement("table");
+      table.innerHTML="<thead><tr>"+cols.map(function(c){return "<th>"+esc(c)+"</th>";}).join("")+"</tr></thead><tbody>"+
+        rows.map(function(row){return "<tr>"+cols.map(function(c){return "<td>"+esc(simple(row[c]))+"</td>";}).join("")+"</tr>";}).join("")+"</tbody>";
+      wrap.appendChild(table);
+    }
+    document.getElementById("raw").textContent=JSON.stringify(payload.data,null,2);
+  }
+  function downloadCsv(rows,cols){
+    var csv=[cols].concat(rows.map(function(row){return cols.map(function(c){return simple(row[c]);});}))
+      .map(function(line){return line.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(",");}).join("\n");
+    var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));a.download="trend-radar-seo.csv";a.click();URL.revokeObjectURL(a.href);
+  }
+  console.assert(list("a, b\nc").length===3,"keyword list parser");
+})();
+</script>
+</body>
+</html>
