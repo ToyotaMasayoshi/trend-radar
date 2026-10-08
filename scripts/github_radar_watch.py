@@ -69,7 +69,10 @@ HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
                            # unfiltered-model queries: model-info direction
                            "uncensored",
                            # ML training techniques (same family as fine-tune exclusion)
-                           "distillation"]
+                           "distillation",
+                           # saturated utility keywords: entrenched incumbent (e.g. lipsum.com),
+                           # no differentiation room — user 2026-10-08: skip, no prospect
+                           "lorem ipsum"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
