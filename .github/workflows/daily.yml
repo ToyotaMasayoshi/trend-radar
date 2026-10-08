@@ -28,6 +28,7 @@ jobs:
           path: |
             state/state.json
             state/roots.json
+            state/seo-suggestions.json
           key: trend-radar-state-${{ github.run_id }}
           restore-keys: trend-radar-state-
       - run: python3 -B scripts/merge_nodes.py
@@ -44,6 +45,7 @@ jobs:
           path: |
             state/state.json
             state/roots.json
+            state/seo-suggestions.json
           key: trend-radar-state-${{ github.run_id }}
       - uses: actions/setup-node@v4
         with:

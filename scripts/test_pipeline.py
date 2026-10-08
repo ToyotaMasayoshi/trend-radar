@@ -19,7 +19,7 @@ from collect import (build_candidates, classify, collect_roots, is_entertainment
 from cluster import build_clusters, HYPOTHESES
 from trends import RateLimited, TrendsClient
 import github_radar_watch
-from merge_nodes import merge_state
+from merge_nodes import merge_state, merge_suggestions
 import report
 import trends_gate
 import verify_spread
@@ -294,6 +294,19 @@ def test_local_node_merge_prefers_newer_records():
           changed == 2 and state["roots"]["alpha"]["updated"]
           == "2026-10-07T01:00:00Z" and "beta" in state["roots"]
           and "signal" in state["reviews"])
+
+
+def test_local_suggestion_merge_prefers_newer_records():
+    target = {"items": {"us|ai": {"fetched_at": "2026-10-08T01:00:00Z",
+                                    "items": ["old"]}}}
+    changed = merge_suggestions(target, {"updated": "2026-10-08T03:00:00Z",
+        "suggestions": {
+            "us|ai": {"fetched_at": "2026-10-08T00:00:00Z", "items": ["older"]},
+            "us|seo": {"fetched_at": "2026-10-08T02:00:00Z", "items": ["seo tool"]},
+        }})
+    check("suggestions: merge keeps newest and adds missing",
+          changed == 1 and target["items"]["us|ai"]["items"] == ["old"]
+          and target["items"]["us|seo"]["items"] == ["seo tool"])
 
 
 def test_trends_client_warms_google_session():

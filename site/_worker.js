@@ -9,7 +9,7 @@ export default{async fetch(request,env){
   try{
     const input=await request.json();
     if(path==="/api/seo/audit")return out(await audit(input));
-    if(path==="/api/seo/ideas")return out(await ideas(input,request.url));
+    if(path==="/api/seo/ideas")return out(await ideas(input,request.url,env));
     if(path==="/api/seo/site-keywords")return out(await siteKeywords(input));
     if(path==="/api/seo/history")return out(await history(input));
     return out({ok:false,error:"工具不存在"},404);
@@ -95,14 +95,26 @@ function ruleIdeas(seeds,mode,limit){
   for(const seed of seeds)for(const part of suffix){const keyword=(part.endsWith(" ")?part+seed:seed+part).trim().toLowerCase();rows.push({keyword,intent:intent(keyword),source:"规则生成"});if(rows.length>=limit)return rows}
   return rows;
 }
-async function ideas(input,requestUrl){
+async function ideas(input,requestUrl,env){
   const seeds=Array.from(new Set((input.seeds||[]).map(x=>String(x).trim()).filter(Boolean))).slice(0,3);if(!seeds.length)throw Error("至少填写一个种子词");
   const mode=["suggestions","questions","commercial"].includes(input.mode)?input.mode:"suggestions",gl=String(input.gl||"us").replace(/[^a-z]/gi,"").slice(0,2)||"us",limit=Math.min(50,Math.max(10,+input.limit||25));
   const cache=caches.default,keyUrl=new URL("/__seo_cache/ideas",requestUrl);keyUrl.searchParams.set("q",seeds.join("|"));keyUrl.searchParams.set("mode",mode);keyUrl.searchParams.set("gl",gl);keyUrl.searchParams.set("limit",String(limit));
   const key=new Request(keyUrl.toString()),saved=await cache.match(key);let stale=null;
   if(saved){stale=await saved.json();const age=Date.now()-Date.parse(stale.data.summary.observedAt);if(age<86400000){stale.data.summary.cache="24 小时缓存";return stale}}
+  const failures=[],seen=new Set(),items=[],sources=new Set(),localSeeds=new Set();
+  if(mode==="suggestions")try{
+    const response=await env.ASSETS.fetch(new Request(new URL("/data/seo-suggestions.json",requestUrl)));
+    if(response.ok){
+      const database=await response.json();
+      for(const seed of seeds){
+        const record=database.items?.[gl+"|"+seed.toLowerCase()];
+        if(!record||Date.now()-Date.parse(record.fetched_at)>604800000)continue;
+        localSeeds.add(seed);sources.add("本地 Google");
+        for(const raw of record.items||[]){const keyword=clean(raw).toLowerCase();if(keyword&&!seen.has(keyword)){seen.add(keyword);items.push({keyword,intent:intent(keyword),source:"本地 Google 自动补全"});if(items.length>=limit)break}}
+      }
+    }
+  }catch(_){}
   const circuitKey=new Request(new URL("/__seo_cache/circuit/google",requestUrl).toString()),googlePaused=Boolean(await cache.match(circuitKey));
-  const failures=[],seen=new Set(),items=[],sources=new Set();
   async function collect(query){
     const order=googlePaused?["Bing"]:["Google","Bing"];
     for(const source of order){
@@ -116,7 +128,7 @@ async function ideas(input,requestUrl){
       failures.push({source,query,status:result.status});
     }
   }
-  for(let i=0;i<seeds.length&&items.length<limit;i++){await collect(seeds[i]);if(i<seeds.length-1)await sleep(500)}
+  for(let i=0;i<seeds.length&&items.length<limit;i++){if(!localSeeds.has(seeds[i]))await collect(seeds[i]);if(i<seeds.length-1&&!localSeeds.has(seeds[i]))await sleep(500)}
   if(items.length<limit){const more=seeds.flatMap(seed=>extraQueries(seed,mode));for(let i=0;i<more.length&&items.length<limit;i++){await collect(more[i]);if(i<more.length-1)await sleep(500)}}
   if(!items.length&&stale){stale.data.summary.cache="过期缓存兜底";stale.data.summary.failures=failures.length;stale.data.summary.upstreamStatuses=failures;return stale}
   const finalItems=items.length?items:ruleIdeas(seeds,mode,limit),source=items.length?Array.from(sources).join(" + ")+" 自动补全":"规则生成（上游均失败）";
