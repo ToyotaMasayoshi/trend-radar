@@ -9,7 +9,7 @@ export default{async fetch(request,env){
   try{
     const input=await request.json();
     if(path==="/api/seo/audit")return out(await audit(input));
-    if(path==="/api/seo/ideas")return out(await ideas(input));
+    if(path==="/api/seo/ideas")return out(await ideas(input,request.url));
     if(path==="/api/seo/site-keywords")return out(await siteKeywords(input));
     if(path==="/api/seo/history")return out(await history(input));
     return out({ok:false,error:"工具不存在"},404);
@@ -67,14 +67,62 @@ async function audit(input){
   return{ok:true,tool:"On Page SEO 体检",source:"目标页面实时 HTML",data:{summary:{observedAt:new Date().toISOString(),metricDefinition:"页面 HTML 规则检查分，不是 Google 排名分",score:Math.round(points/checks.length/2*100),url:f.url.toString(),keyword,title:d.title,description:d.description,words:d.words,internalLinks:d.internal,externalLinks:d.external},checks}};
 }
 function intent(k){if(/\b(buy|price|pricing|coupon|deal|order|hire|download)\b/i.test(k))return"交易";if(/\b(best|top|review|alternative|vs|compare)\b/i.test(k))return"商业调查";if(/\b(login|official|website|app)\b/i.test(k))return"导航";return"信息"}
-async function ideas(input){
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+async function askSuggestion(query,gl,source){
+  const endpoint=source==="Google"
+    ?"https://suggestqueries.google.com/complete/search?client=firefox&hl=en&gl="+encodeURIComponent(gl)+"&q="+encodeURIComponent(query)
+    :"https://api.bing.com/osjson.aspx?market=en-US&query="+encodeURIComponent(query);
+  let status="network";
+  for(let attempt=0;attempt<2;attempt++){
+    try{
+      const response=await fetch(endpoint,{headers:{Accept:"application/json","User-Agent":"Mozilla/5.0 TrendRadarSEO/1.0"},cf:{cacheTtl:86400,cacheEverything:true}});
+      status=response.status;
+      if(response.ok){const payload=await response.json();return{items:Array.isArray(payload[1])?payload[1]:[],status}}
+      if(response.status!==429&&response.status<500)break;
+    }catch(e){status=e.name||"network"}
+    if(attempt===0)await sleep(600);
+  }
+  return{items:[],status};
+}
+function extraQueries(seed,mode){
+  if(mode==="questions")return["how to "+seed,"what is "+seed,"why "+seed];
+  if(mode==="commercial")return["best "+seed,seed+" alternative",seed+" vs"];
+  return[seed+" for",seed+" online"];
+}
+function ruleIdeas(seeds,mode,limit){
+  const suffix=mode==="questions"?["how to ","what is ","why "]:mode==="commercial"?["best ","compare "," alternatives"]:[" free"," online"," tool"," for beginners"];
+  const rows=[];
+  for(const seed of seeds)for(const part of suffix){const keyword=(part.endsWith(" ")?part+seed:seed+part).trim().toLowerCase();rows.push({keyword,intent:intent(keyword),source:"规则生成"});if(rows.length>=limit)return rows}
+  return rows;
+}
+async function ideas(input,requestUrl){
   const seeds=Array.from(new Set((input.seeds||[]).map(x=>String(x).trim()).filter(Boolean))).slice(0,3);if(!seeds.length)throw Error("至少填写一个种子词");
-  const mode=["suggestions","questions","commercial"].includes(input.mode)?input.mode:"suggestions",gl=String(input.gl||"us").replace(/[^a-z]/gi,"").slice(0,2)||"us",limit=Math.min(50,Math.max(10,+input.limit||25)),queries=[];
-  for(const s of seeds)mode==="questions"?queries.push("how to "+s,"what is "+s,"why "+s):mode==="commercial"?queries.push("best "+s,s+" alternative",s+" vs"):queries.push(s,s+" for",s+" online");
-  const batches=await Promise.all(queries.map(async q=>{try{const r=await fetch("https://suggestqueries.google.com/complete/search?client=firefox&hl=en&gl="+encodeURIComponent(gl)+"&q="+encodeURIComponent(q),{cf:{cacheTtl:86400,cacheEverything:true}}),j=await r.json();return Array.isArray(j[1])?j[1]:[]}catch(_){return[]}}));
-  const seen=new Set(),items=[];for(const raw of batches.flat()){const keyword=clean(raw).toLowerCase();if(!keyword||seen.has(keyword))continue;seen.add(keyword);items.push({keyword,intent:intent(keyword),source:"Google 自动补全"});if(items.length>=limit)break}
-  if(!items.length)throw Error("Google 自动补全暂时没有返回结果，请稍后重试");
-  return{ok:true,tool:"关键词拓展",source:"Google 自动补全（非搜索量）",data:{summary:{observedAt:new Date().toISOString(),metricDefinition:"Google 自动补全候选词，不是搜索量",seeds,mode,country:gl,count:items.length},items}};
+  const mode=["suggestions","questions","commercial"].includes(input.mode)?input.mode:"suggestions",gl=String(input.gl||"us").replace(/[^a-z]/gi,"").slice(0,2)||"us",limit=Math.min(50,Math.max(10,+input.limit||25));
+  const cache=caches.default,keyUrl=new URL("/__seo_cache/ideas",requestUrl);keyUrl.searchParams.set("q",seeds.join("|"));keyUrl.searchParams.set("mode",mode);keyUrl.searchParams.set("gl",gl);keyUrl.searchParams.set("limit",String(limit));
+  const key=new Request(keyUrl.toString()),saved=await cache.match(key);let stale=null;
+  if(saved){stale=await saved.json();const age=Date.now()-Date.parse(stale.data.summary.observedAt);if(age<86400000){stale.data.summary.cache="24 小时缓存";return stale}}
+  const circuitKey=new Request(new URL("/__seo_cache/circuit/google",requestUrl).toString()),googlePaused=Boolean(await cache.match(circuitKey));
+  const failures=[],seen=new Set(),items=[],sources=new Set();
+  async function collect(query){
+    const order=googlePaused?["Bing"]:["Google","Bing"];
+    for(const source of order){
+      const result=await askSuggestion(query,gl,source);
+      if(result.status===429&&source==="Google")await cache.put(circuitKey,new Response("paused",{headers:{"Cache-Control":"public,max-age=900"}}));
+      if(result.items.length){
+        sources.add(source);
+        for(const raw of result.items){const keyword=clean(raw).toLowerCase();if(keyword&&!seen.has(keyword)){seen.add(keyword);items.push({keyword,intent:intent(keyword),source:source+" 自动补全"});if(items.length>=limit)return}}
+        return;
+      }
+      failures.push({source,query,status:result.status});
+    }
+  }
+  for(let i=0;i<seeds.length&&items.length<limit;i++){await collect(seeds[i]);if(i<seeds.length-1)await sleep(500)}
+  if(items.length<limit){const more=seeds.flatMap(seed=>extraQueries(seed,mode));for(let i=0;i<more.length&&items.length<limit;i++){await collect(more[i]);if(i<more.length-1)await sleep(500)}}
+  if(!items.length&&stale){stale.data.summary.cache="过期缓存兜底";stale.data.summary.failures=failures.length;stale.data.summary.upstreamStatuses=failures;return stale}
+  const finalItems=items.length?items:ruleIdeas(seeds,mode,limit),source=items.length?Array.from(sources).join(" + ")+" 自动补全":"规则生成（上游均失败）";
+  const payload={ok:true,tool:"关键词拓展",source,data:{summary:{observedAt:new Date().toISOString(),metricDefinition:items.length?"自动补全候选词，不是搜索量":"规则组合，不是外部采集数据",cache:items.length?"已缓存 7 天；24 小时内直接使用":"未缓存",seeds,mode,country:gl,count:finalItems.length,failures:failures.length,upstreamStatuses:failures},items:finalItems}};
+  if(items.length)await cache.put(key,new Response(JSON.stringify(payload),{headers:{"Content-Type":"application/json","Cache-Control":"public,max-age=604800"}}));
+  return payload;
 }
 function tokens(text){return(clean(text).toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}'-]*/gu)||[]).map(x=>x.replace(/^[-']+|[-']+$/g,"")).filter(x=>x.length>1&&!STOP.has(x))}
 function addTerms(map,text,weight,page,phrases){
