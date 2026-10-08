@@ -342,6 +342,7 @@ def main() -> int:
     new_roots: list[str] = []
     radar_added: list[str] = []
     blocklist = {norm(t) for t in (store.get("root_blocklist") or [])}
+    radar_candidates: list[str] = []
     for p in passed:
         # re-fetch fullName -> root term
         for repo in top:
@@ -352,9 +353,20 @@ def main() -> int:
                         # (user does not build model-info sites); never add
                         continue
                     if norm(rt) not in existing and norm(rt) not in blocklist:
-                        new_roots.append(rt)
-                        radar_added.append(rt)
-                        existing.add(norm(rt))
+                        radar_candidates.append(rt)
+    # Google Trends interest gate (2026-10-08): radar candidates must show
+    # some search interest; fail-open on rate limit (None -> add anyway).
+    if radar_candidates:
+        from trends_gate import validate_roots_interest  # noqa: E402
+        verdicts = validate_roots_interest(radar_candidates)
+        for rt in radar_candidates:
+            if verdicts.get(rt) is False:
+                summary["skipped"] += 1
+                summary.setdefault("trends_gated", []).append(rt)
+                continue
+            new_roots.append(rt)
+            radar_added.append(rt)
+            existing.add(norm(rt))
     # P1: feedback loop — new/revived terms from the daily report become roots
     feedback_added = feedback_roots(store, existing)
     summary["feedback_added"] = feedback_added
