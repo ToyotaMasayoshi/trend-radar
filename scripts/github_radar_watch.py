@@ -46,11 +46,24 @@ FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
 # - AI companionship (AI girlfriends/companions): user does not build these.
 # - AI fine-tuning services: not implementable by the user.
 # - Entertainment noise: pure fandom/book-movie topics (2026-10-08 09:21 audit;
-#   "guide to dragonkind fourth wing" deleted as entertainment noise).
+#   "guide to dragonkind fourth wing" deleted as entertainment noise;
+#   2026-10-08 11:18 watch run caught 4 more of the same family auto-added by
+#   the P1 feedback loop - "orange dragon fourth wing", "fourth wing dragon
+#   types", "odysseus pewdiepie", "odysseus ajax" - removed + blacklisted,
+#   substrings below now block the whole families).
+#   2026-10-08 12:18 watch run caught 9 more entertainment-noise roots from the
+#   P1 feedback loop - the "steal an egg"/"enchanted forest" gaming-meme family
+#   ("in steal an egg", "steal an egg eggs", "wisp steal an egg",
+#   "enchanted forest steal an egg", "steal an egg all eggs",
+#   "steal an egg index", "enchanted forest index") and the "ajax" family
+#   ("ajax ai", "ajax model"; "ajax" = same game-character family as
+#   "odysseus ajax") - removed + blacklisted.
 HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
                            "virtual girlfriend", "virtual companion",
                            "fine-tuning", "finetune", "fine tune",
-                           "dragonkind"]
+                           "dragonkind", "fourth wing", "pewdiepie",
+                           "odysseus", "steal an egg", "enchanted forest",
+                           "ajax"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
