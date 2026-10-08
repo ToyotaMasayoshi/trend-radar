@@ -67,7 +67,9 @@ HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
                            # news/politics noise (user deletes on sight)
                            "trump",
                            # unfiltered-model queries: model-info direction
-                           "uncensored"]
+                           "uncensored",
+                           # ML training techniques (same family as fine-tune exclusion)
+                           "distillation"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
