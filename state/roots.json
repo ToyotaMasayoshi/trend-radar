@@ -8,7 +8,7 @@
   "github-radar:2026-10-08"
  ],
  "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 568,
+ "count": 564,
  "roots": [
   "ai",
   "ai generator",
@@ -573,11 +573,7 @@
   "ronova mains",
   "plaud note pro ai-powered transcriber",
   "tutor 2 u ai marker",
-  "everygen ai/mcp",
-  "dragon kind guide",
-  "field guide to dragonkind",
-  "the guide to dragonkind",
-  "dragonkind guide to dragons"
+  "everygen ai/mcp"
  ],
  "root_sources": {
   "ai": "reference",
@@ -1162,11 +1158,7 @@
   "tutor 2 u ai marker": "feedback",
   "guide to dragonkind fourth wing": "feedback",
   "everygen ai/mcp": "feedback",
-  "best ai girlfriend reddit": "feedback",
-  "dragon kind guide": "feedback",
-  "field guide to dragonkind": "feedback",
-  "the guide to dragonkind": "feedback",
-  "dragonkind guide to dragons": "feedback"
+  "best ai girlfriend reddit": "feedback"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1751,11 +1743,7 @@
   "tutor 2 u ai marker": "2026-10-08",
   "guide to dragonkind fourth wing": "2026-10-08",
   "everygen ai/mcp": "2026-10-08",
-  "best ai girlfriend reddit": "2026-10-08",
-  "dragon kind guide": "2026-10-08",
-  "field guide to dragonkind": "2026-10-08",
-  "the guide to dragonkind": "2026-10-08",
-  "dragonkind guide to dragons": "2026-10-08"
+  "best ai girlfriend reddit": "2026-10-08"
  },
  "marks": {},
  "root_blocklist": [
@@ -1896,6 +1884,10 @@
   "viblo ai",
   "william shakespeare portrait",
   "zombie trend",
-  "เว็บ สล็อต ccb gov ng demo"
+  "เว็บ สล็อต ccb gov ng demo",
+  "dragon kind guide",
+  "field guide to dragonkind",
+  "the guide to dragonkind",
+  "dragonkind guide to dragons"
  ]
 }
