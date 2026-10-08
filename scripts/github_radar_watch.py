@@ -45,9 +45,12 @@ FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
 # Hard-excluded directions (user standing rules, 2026-10-06/07): never auto-add.
 # - AI companionship (AI girlfriends/companions): user does not build these.
 # - AI fine-tuning services: not implementable by the user.
+# - Entertainment noise: pure fandom/book-movie topics (2026-10-08 09:21 audit;
+#   "guide to dragonkind fourth wing" deleted as entertainment noise).
 HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
                            "virtual girlfriend", "virtual companion",
-                           "fine-tuning", "finetune", "fine tune"]
+                           "fine-tuning", "finetune", "fine tune",
+                           "dragonkind"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
