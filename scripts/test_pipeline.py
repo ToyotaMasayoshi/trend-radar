@@ -21,6 +21,7 @@ from trends import RateLimited, TrendsClient
 import github_radar_watch
 from merge_nodes import merge_state
 import report
+import trends_gate
 import verify_spread
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -320,6 +321,56 @@ def test_trends_client_retries_429():
     with patch("trends.time.sleep"):
         payload = client._read(urllib.request.Request("https://example.test"), "test")
     check("429: bounded retry can recover", payload == b"ok" and client.requests == 2)
+
+
+def _gate_client(timelines=None, rate_limited_after=None):
+    """Fake TrendsClient for the interest gate. timelines: {term: [values]}."""
+    from unittest.mock import MagicMock
+    client = MagicMock()
+    calls = []
+    def timeline(terms, timeframe):
+        calls.append((list(terms), timeframe))
+        if rate_limited_after is not None and len(calls) > rate_limited_after:
+            from trends import RateLimited
+            raise RateLimited("429")
+        return {t: [{"time": "d%d" % i, "value": v}
+                    for i, v in enumerate((timelines or {}).get(t, []))]
+                for t in terms}
+    client.timeline.side_effect = timeline
+    client.calls = calls
+    return client
+
+
+def test_trends_gate_pass_and_zero():
+    client = _gate_client({"hot tool": [0, 20, 100], "dead tool": [0, 0, 0],
+                           "one blip": [0, 0, 100]})
+    out = trends_gate.validate_roots_interest(
+        ["hot tool", "dead tool", "one blip"], client=client)
+    check("gate: interest -> True, zero/single-blip -> False",
+          out == {"hot tool": True, "dead tool": False, "one blip": False})
+
+
+def test_trends_gate_single_term_per_call():
+    client = _gate_client({"a": [5], "b": [0]})
+    trends_gate.validate_roots_interest(["a", "b"], client=client)
+    check("gate: one term per timeline call (no relative-scale distortion)",
+          all(len(terms) == 1 for terms, _ in client.calls))
+
+
+def test_trends_gate_rate_limited_fails_open():
+    client = _gate_client({"a": [10, 20]}, rate_limited_after=1)
+    out = trends_gate.validate_roots_interest(["a", "b", "c"], client=client)
+    check("gate: 429 fails open (None) for unchecked terms",
+          out == {"a": True, "b": None, "c": None})
+
+
+def test_trends_gate_empty_and_dedup():
+    client = _gate_client({"x": [1, 2]})
+    out = trends_gate.validate_roots_interest(["x", "x"], client=client)
+    check("gate: empty -> {}, dupes collapsed",
+          trends_gate.validate_roots_interest([], client=client) == {}
+          and out == {"x": True} and len(client.calls) == 1)
+
 
 
 def test_review_prioritizes_breakout():
