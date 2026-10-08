@@ -373,6 +373,22 @@ def test_trends_gate_empty_and_dedup():
 
 
 
+
+
+
+def test_merge_stores_blocklist_is_authoritative():
+    remote = {"roots": ["a", "b", "dead1"], "root_blocklist": [],
+              "root_sources": {"dead1": "reddit-ai", "ghost": "reddit-ai"}}
+    local = {"roots": ["a", "c"], "root_blocklist": ["dead1", "dead2"],
+             "root_sources": {"c": "github-radar"}}
+    out = github_radar_watch.merge_stores(remote, local)
+    check("merge: blocklisted root dropped from merged list",
+          "dead1" not in out["roots"] and set(out["roots"]) == {"a", "b", "c"})
+    check("merge: blocklist unioned",
+          set(out["root_blocklist"]) == {"dead1", "dead2"})
+    check("merge: orphaned source entries pruned",
+          set(out["root_sources"]) == {"c"})
+
 def test_review_prioritizes_breakout():
     class FakeClient:
         requests = 0
