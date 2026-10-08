@@ -11,6 +11,7 @@ export default{async fetch(request,env){
     if(path==="/api/seo/audit")return out(await audit(input));
     if(path==="/api/seo/ideas")return out(await ideas(input));
     if(path==="/api/seo/site-keywords")return out(await siteKeywords(input));
+    if(path==="/api/seo/history")return out(await history(input));
     return out({ok:false,error:"工具不存在"},404);
   }catch(e){return out({ok:false,error:e.message||"处理失败"},400)}
 }};
@@ -63,7 +64,7 @@ async function audit(input){
     check(d.schema?"pass":"warn","结构化数据",d.schema,"仅在内容真实支持时添加 Schema")
   ];
   const points=checks.reduce((n,x)=>n+(x.status==="pass"?2:x.status==="warn"?1:0),0);
-  return{ok:true,tool:"On Page SEO 体检",source:"目标页面实时 HTML",data:{summary:{score:Math.round(points/checks.length/2*100),url:f.url.toString(),keyword,title:d.title,description:d.description,words:d.words,internalLinks:d.internal,externalLinks:d.external},checks}};
+  return{ok:true,tool:"On Page SEO 体检",source:"目标页面实时 HTML",data:{summary:{observedAt:new Date().toISOString(),metricDefinition:"页面 HTML 规则检查分，不是 Google 排名分",score:Math.round(points/checks.length/2*100),url:f.url.toString(),keyword,title:d.title,description:d.description,words:d.words,internalLinks:d.internal,externalLinks:d.external},checks}};
 }
 function intent(k){if(/\b(buy|price|pricing|coupon|deal|order|hire|download)\b/i.test(k))return"交易";if(/\b(best|top|review|alternative|vs|compare)\b/i.test(k))return"商业调查";if(/\b(login|official|website|app)\b/i.test(k))return"导航";return"信息"}
 async function ideas(input){
@@ -73,7 +74,7 @@ async function ideas(input){
   const batches=await Promise.all(queries.map(async q=>{try{const r=await fetch("https://suggestqueries.google.com/complete/search?client=firefox&hl=en&gl="+encodeURIComponent(gl)+"&q="+encodeURIComponent(q),{cf:{cacheTtl:86400,cacheEverything:true}}),j=await r.json();return Array.isArray(j[1])?j[1]:[]}catch(_){return[]}}));
   const seen=new Set(),items=[];for(const raw of batches.flat()){const keyword=clean(raw).toLowerCase();if(!keyword||seen.has(keyword))continue;seen.add(keyword);items.push({keyword,intent:intent(keyword),source:"Google 自动补全"});if(items.length>=limit)break}
   if(!items.length)throw Error("Google 自动补全暂时没有返回结果，请稍后重试");
-  return{ok:true,tool:"关键词拓展",source:"Google 自动补全（非搜索量）",data:{summary:{seeds,mode,country:gl,count:items.length},items}};
+  return{ok:true,tool:"关键词拓展",source:"Google 自动补全（非搜索量）",data:{summary:{observedAt:new Date().toISOString(),metricDefinition:"Google 自动补全候选词，不是搜索量",seeds,mode,country:gl,count:items.length},items}};
 }
 function tokens(text){return(clean(text).toLowerCase().match(/[\p{L}\p{N}][\p{L}\p{N}'-]*/gu)||[]).map(x=>x.replace(/^[-']+|[-']+$/g,"")).filter(x=>x.length>1&&!STOP.has(x))}
 function addTerms(map,text,weight,page,phrases){
@@ -95,6 +96,19 @@ async function siteKeywords(input){
   const pages=(await Promise.all(urls.map(async u=>{try{return await fetchHtml(u)}catch(_){return null}}))).filter(Boolean);if(!pages.length)throw Error("没有抓取到可分析的 HTML 页面");
   const map=new Map();for(const p of pages){const d=pageData(p.html,p.url),u=p.url.toString();addTerms(map,d.title,8,u,true);d.h1.forEach(x=>addTerms(map,x,6,u,true));d.h2.forEach(x=>addTerms(map,x,3,u,true));addTerms(map,d.text,1,u,false)}
   const items=Array.from(map,([keyword,v])=>({keyword,score:Math.round(v.score),pages:v.pages.size})).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score||b.pages-a.pages||b.keyword.split(" ").length-a.keyword.split(" ").length).slice(0,limit);
-  return{ok:true,tool:"站内页面出词",source:"首页/指定页与公开 sitemap",data:{summary:{target:target.toString(),pagesAnalyzed:pages.length,count:items.length,note:"分数是页面出现与标题权重，不是搜索量或 Google 排名"},items,pages:pages.map(x=>x.url.toString())}};
+  return{ok:true,tool:"站内页面出词",source:"首页/指定页与公开 sitemap",data:{summary:{observedAt:new Date().toISOString(),metricDefinition:"页面词频与标题权重，不是搜索量或排名",target:target.toString(),pagesAnalyzed:pages.length,count:items.length,note:"分数是页面出现与标题权重，不是搜索量或 Google 排名"},items,pages:pages.map(x=>x.url.toString())}};
 }
+
+function crawlDate(s){return s&&s.length>=8?s.slice(0,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8):s||""}
+async function history(input){
+  const target=safeUrl(input.target),limit=Math.min(100,Math.max(10,+input.limit||50));
+  const collections=await fetch("https://index.commoncrawl.org/collinfo.json",{cf:{cacheTtl:86400,cacheEverything:true}}).then(r=>r.ok?r.json():[]);
+  const latest=collections[0];if(!latest||!latest["cdx-api"])throw Error("暂时无法读取 Common Crawl 索引");
+  const api=new URL(latest["cdx-api"]);api.searchParams.set("url",target.hostname);api.searchParams.set("matchType","domain");api.searchParams.set("output","json");api.searchParams.append("filter","status:200");api.searchParams.append("filter","mime:text/html");api.searchParams.set("collapse","urlkey");api.searchParams.set("limit",String(limit));
+  const response=await fetch(api,{headers:{"User-Agent":"TrendRadarSEO/1.0"},cf:{cacheTtl:86400,cacheEverything:true}});
+  if(!response.ok)throw Error("Common Crawl 返回 HTTP "+response.status);
+  const items=(await response.text()).trim().split("\n").filter(Boolean).slice(0,limit).map(line=>{const x=JSON.parse(line);return{url:x.url,crawledAt:crawlDate(x.timestamp),status:x.status,mime:x.mime,length:Number(x.length||0),digest:x.digest||""}});
+  return{ok:true,tool:"公开网页历史",source:"Common Crawl URL Index",data:{summary:{observedAt:new Date().toISOString(),metricDefinition:"Common Crawl 收录记录，不代表 Google 收录或排名",target:target.hostname,crawl:latest.id,crawlWindow:latest.from+" — "+latest.to,count:items.length},items}};
+}
+
 if(intent("best image editor")!=="商业调查"||tokens("the useful image tool").includes("the"))throw Error("SEO helper self-check failed");
