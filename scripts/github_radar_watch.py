@@ -42,6 +42,12 @@ FEEDBACK_NOISE_SUBSTRINGS = ["near me", ".gov", ".com", ".org", ".net", ".io",
                              "i wasn't able", "i'm sorry", "as an ai",
                              "i cannot", "unable to generate", "error on my side",
                              "something went wrong"]
+# Hard-excluded directions (user standing rules, 2026-10-06/07): never auto-add.
+# - AI companionship (AI girlfriends/companions): user does not build these.
+# - AI fine-tuning services: not implementable by the user.
+HARD_EXCLUDED_SUBSTRINGS = ["girlfriend", "ai companion", "waifu",
+                           "virtual girlfriend", "virtual companion",
+                           "fine-tuning", "finetune", "fine tune"]
 # generic how-to / question phrases make poor roots
 FEEDBACK_NOISE_PREFIXES = ["how ", "what ", "why ", "when ", "where ", "which "]
 # Big-vendor AI model terms are not auto-added as roots (user 2026-10-07:
@@ -68,6 +74,8 @@ def is_vendor_model_term(q: str) -> bool:
 
 def _feedback_noise(q: str) -> bool:
     if any(s in q for s in FEEDBACK_NOISE_SUBSTRINGS):
+        return True
+    if any(s in q for s in HARD_EXCLUDED_SUBSTRINGS):
         return True
     if is_vendor_model_term(q):
         return True
