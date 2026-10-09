@@ -66,6 +66,29 @@ def test_feedback_and_spread_guards():
           result["mesh avatar studio"]["verdict"] == "查询失败")
     check("spread: query failure is not cached", saved == {})
 
+    with patch.object(verify_spread, "_query_hn_count", side_effect=[1]):
+        check("novelty: old HN mention", verify_spread._query_novelty("old term")["novelty"] == "old")
+    with patch.object(verify_spread, "_query_hn_count", side_effect=[0, 2]):
+        check("novelty: recent-only mention", verify_spread._query_novelty("new term")["novelty"] == "likely-new")
+    with patch.object(verify_spread, "_query_hn_count", side_effect=[0, 0, 1]):
+        check("novelty: middle-age mention", verify_spread._query_novelty("mid term")["novelty"] == "uncertain")
+    with patch.object(verify_spread, "_query_hn_count", side_effect=[0, 0, 0]):
+        check("novelty: no HN evidence stays unknown", verify_spread._query_novelty("quiet term")["novelty"] == "unknown")
+    with patch.object(verify_spread, "_get_json", return_value={"nbHits": 0}) as fetch:
+        verify_spread._query_hn_count("two words")
+    check("novelty: HN uses exact phrase", "%22two+words%22" in fetch.call_args.args[0])
+
+    links = ["https://reddit.com/a", "https://quora.com/a",
+             "https://x.reddit.com/a", "https://steamcommunity.com/a",
+             *(f"https://site{i}.com/a" for i in range(6))]
+    html = "".join(f'<a href="{url}" class="result-link">x</a>' for url in links)
+    response = MagicMock()
+    response.__enter__.return_value.read.return_value = html.encode()
+    with patch.object(verify_spread.urllib.request, "urlopen", return_value=response):
+        gap = verify_spread._query_market_gap("new term")
+    check("market: four UGC results means gap",
+          gap["ugc_ratio"] == 0.4 and gap["market_status"] == "gap")
+
 
 def test_classify_new():
     yearly = pts([0] * 46 + [0, 0, 0, 0, 80, 100])
@@ -502,7 +525,9 @@ def test_report_renders():
         }), encoding="utf-8")
         clu_f.write_text(json.dumps(build_clusters(
             json.loads(state_f.read_text())["reviews"])), encoding="utf-8")
-        assert report.main() == 0
+        with patch.object(verify_spread, "verify_terms", return_value={}), \
+                patch.object(verify_spread, "verify_opportunities", return_value={}):
+            assert report.main() == 0
         daily = json.loads((ROOT / "site" / "data" / "daily.json").read_text(encoding="utf-8"))
         md = (ROOT / "reports").glob("*.md")
         check("report: daily.json valid", daily["stats"]["candidates"] == 2)

@@ -1,5 +1,6 @@
 state/state.json
 state/clusters.json
+state/local/
 site/data/daily.json
 reports/*.md
 __pycache__/

@@ -130,6 +130,19 @@ def main() -> int:
     except Exception:
         spread = {}
 
+    # Only historically-reviewed, relevant new terms consume opportunity checks.
+    opportunities: dict[str, dict] = {}
+    try:
+        from verify_spread import verify_opportunities
+        opportunity_terms = [r["q"] for r in rows if
+                             r.get("reviewed") and r.get("verdict") == "new" and
+                             not r.get("entertainment") and
+                             not is_noise_term(r["q"]) and
+                             r.get("relation_status") in {"direct", "evidence"}]
+        opportunities = verify_opportunities(opportunity_terms, limit=20)
+    except Exception:
+        opportunities = {}
+
     # -- root source distribution + marks (for origin comparison) ------------
     roots_pool = {}
     try:
@@ -170,6 +183,7 @@ def main() -> int:
             "relation_rule": "raw Trends hits are audited separately; only token/entity-matched roots count",
             "intent_rule": "local/navigation noise cannot bypass relevance through Breakout",
             "review_rule": "unreviewed related queries stay in watch or low-signal tiers",
+            "opportunity_rule": "only reviewed, non-noise, direct/evidence-linked new terms; labels never delete or change verdicts",
             "review_queue_rule": "direct/evidence-linked terms first; generic, navigation and entertainment noise excluded; short high-rise coined terms retained",
             "review_resume_rule": "12m/5y/30d/7d windows persist independently and resume after 429",
             "low_signal_rule": "growth <500%, not Breakout, no source evidence, fewer than 2 relevant roots",
@@ -198,6 +212,7 @@ def main() -> int:
             "by_verdict": {k: len(v) for k, v in by_verdict.items()},
             "requests": meta.get("requests", 0),
             "rate_limited": meta.get("rate_limited", False),
+            "opportunities_verified": len(opportunities),
             "active_clusters": len(clusters),
             "archived_clusters": sum(c.get("status") == "archived" for c in cluster_history),
             "dedup_rate": round(1 - len(clusters) / len(rows), 4) if rows else 0,
@@ -219,7 +234,13 @@ def main() -> int:
              "relation_status": r.get("relation_status"),
              "search_intent": r.get("search_intent"),
              "review_status": r.get("review_status"),
-             "market_status": r.get("market_status"),
+             "novelty": opportunities.get(r["q"], {}).get("novelty", "unchecked"),
+             "novelty_confidence": opportunities.get(r["q"], {}).get("novelty_confidence"),
+             "ugc_ratio": opportunities.get(r["q"], {}).get("ugc_ratio"),
+             "market_status": opportunities.get(r["q"], {}).get(
+                 "market_status", r.get("market_status")),
+             "rdap_domain": opportunities.get(r["q"], {}).get("rdap_domain"),
+             "rdap_status": opportunities.get(r["q"], {}).get("rdap_status"),
              "trend_verdict": r.get("trend_verdict"),
              "recent_to_baseline": r.get("recent_to_baseline"),
              "note": r.get("note"),
