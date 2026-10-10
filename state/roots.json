@@ -10,7 +10,7 @@
   "github-radar:2026-10-10"
  ],
  "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 572,
+ "count": 571,
  "roots": [
   "ai",
   "ai generator",
@@ -209,7 +209,6 @@
   "qwen3",
   "wan 2",
   "glm",
-  "zhipu",
   "kimi k2",
   "moonshot ai",
   "minimax agent",
@@ -783,7 +782,6 @@
   "qwen3": "reference",
   "wan 2": "reference",
   "glm": "reference",
-  "zhipu": "reference",
   "kimi k2": "reference",
   "moonshot ai": "reference",
   "minimax agent": "reference",
@@ -1357,7 +1355,6 @@
   "qwen3": "2026-10-05",
   "wan 2": "2026-10-05",
   "glm": "2026-10-05",
-  "zhipu": "2026-10-05",
   "kimi k2": "2026-10-05",
   "moonshot ai": "2026-10-05",
   "minimax agent": "2026-10-05",
@@ -1996,6 +1993,7 @@
   "paraphraser francais",
   "nana patekar update",
   "transport fever 3 čeština",
-  "zhipu 股价"
+  "zhipu 股价",
+  "zhipu"
  ]
 }
