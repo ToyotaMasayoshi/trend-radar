@@ -1,12 +1,4 @@
 {
- "pending": [
-  {
-   "term": "live radar",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-10T13:18:41.762201+00:00"
-  }
- ],
+ "pending": [],
  "reviewed_rejected": []
 }
