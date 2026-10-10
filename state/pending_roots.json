@@ -1,4 +1,12 @@
 {
- "pending": [],
+ "pending": [
+  {
+   "term": "google vids",
+   "source": "feedback",
+   "reason": "daily report verdict=new/revived",
+   "detail": "",
+   "queued_at": "2026-10-10T17:18:49.677635+00:00"
+  }
+ ],
  "reviewed_rejected": []
 }
