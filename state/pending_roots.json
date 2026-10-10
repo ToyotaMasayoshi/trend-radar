@@ -1,4 +1,12 @@
 {
- "pending": [],
+ "pending": [
+  {
+   "term": "world space week 2026",
+   "source": "feedback",
+   "reason": "daily report verdict=new/revived",
+   "detail": "",
+   "queued_at": "2026-10-10T21:18:37.289409+00:00"
+  }
+ ],
  "reviewed_rejected": []
 }
