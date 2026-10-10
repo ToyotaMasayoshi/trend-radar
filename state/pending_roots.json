@@ -1,19 +1,4 @@
 {
- "pending": [
-  {
-   "term": "perchance ai image generator",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-10T03:18:34.310568+00:00"
-  },
-  {
-   "term": "ppt summarizer ai",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-10T03:18:34.310568+00:00"
-  }
- ],
+ "pending": [],
  "reviewed_rejected": []
 }
