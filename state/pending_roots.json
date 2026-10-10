@@ -1,4 +1,33 @@
 {
- "pending": [],
+ "pending": [
+  {
+   "term": "ai image enhancer",
+   "source": "feedback",
+   "reason": "daily report verdict=new/revived",
+   "detail": "",
+   "queued_at": "2026-10-10T20:18:38.122166+00:00"
+  },
+  {
+   "term": "influencer marketing trends",
+   "source": "feedback",
+   "reason": "daily report verdict=new/revived",
+   "detail": "",
+   "queued_at": "2026-10-10T20:18:38.122166+00:00"
+  },
+  {
+   "term": "home fitness trends",
+   "source": "feedback",
+   "reason": "daily report verdict=new/revived",
+   "detail": "",
+   "queued_at": "2026-10-10T20:18:38.122166+00:00"
+  },
+  {
+   "term": "flux kontext",
+   "source": "feedback",
+   "reason": "daily report verdict=new/revived",
+   "detail": "",
+   "queued_at": "2026-10-10T20:18:38.122166+00:00"
+  }
+ ],
  "reviewed_rejected": []
 }
