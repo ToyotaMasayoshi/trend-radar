@@ -1,4 +1,33 @@
 {
- "pending": [],
+ "pending": [
+  {
+   "term": "hive ai research tool",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://old.reddit.com/r/AI_Agents/comments/1x1tex3/hive_open_source_research_tool_w_confidence/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-10T04:14:54.359046+00:00"
+  },
+  {
+   "term": "ai remove people from video",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://old.reddit.com/r/StableDiffusion/comments/1x2481c/minimax_h3_remove_people_from_videos_in_comfyui/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-10T04:14:54.359046+00:00"
+  },
+  {
+   "term": "artcraft",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://old.reddit.com/r/StableDiffusion/comments/1x1liae/artcraft_has_ported_the_entire_adobe_suite_to/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-10T04:14:54.359046+00:00"
+  },
+  {
+   "term": "ai infographic generator",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://old.reddit.com/r/LocalLLaMA/comments/1x1pg53/which_image_gen_model_is_best_for_infographics/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-10T04:14:54.359046+00:00"
+  }
+ ],
  "reviewed_rejected": []
 }
