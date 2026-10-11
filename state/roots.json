@@ -10,7 +10,7 @@
   "github-radar:2026-10-10"
  ],
  "extraction": "各词根上升词（原始） section labels; first-seen order; exact union; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots; github_radar_watch: broad-audience low-barrier repos (stage>=1, KEEP); feedback: new/revived terms re-added as roots",
- "count": 419,
+ "count": 432,
  "roots": [
   "ai",
   "ai generator",
@@ -430,7 +430,20 @@
   "ppt summarizer ai",
   "ai remove people from video",
   "artcraft",
-  "ai image enhancer"
+  "ai image enhancer",
+  "ai parking ticket appeal",
+  "ai voiceover for youtube",
+  "ai text watermark detector",
+  "solo ai game studio",
+  "computer use ai agent",
+  "ai negotiation agent",
+  "ai university admission assistant",
+  "lip synced ai avatar",
+  "elevenlabs alternative tts",
+  "ai music visualizer",
+  "book to anime ai",
+  "local semantic file search",
+  "offline voice assistant"
  ],
  "root_sources": {
   "ai": "reference",
@@ -851,7 +864,20 @@
   "ppt summarizer ai": "review-approved",
   "ai remove people from video": "review-approved",
   "artcraft": "review-approved",
-  "ai image enhancer": "review-approved"
+  "ai image enhancer": "review-approved",
+  "ai parking ticket appeal": "review-approved",
+  "ai voiceover for youtube": "review-approved",
+  "ai text watermark detector": "review-approved",
+  "solo ai game studio": "review-approved",
+  "computer use ai agent": "review-approved",
+  "ai negotiation agent": "review-approved",
+  "ai university admission assistant": "review-approved",
+  "lip synced ai avatar": "review-approved",
+  "elevenlabs alternative tts": "review-approved",
+  "ai music visualizer": "review-approved",
+  "book to anime ai": "review-approved",
+  "local semantic file search": "review-approved",
+  "offline voice assistant": "review-approved"
  },
  "root_added_at": {
   "ai": "2026-10-05",
@@ -1272,7 +1298,20 @@
   "ppt summarizer ai": "2026-10-10",
   "ai remove people from video": "2026-10-10",
   "artcraft": "2026-10-10",
-  "ai image enhancer": "2026-10-10"
+  "ai image enhancer": "2026-10-10",
+  "ai parking ticket appeal": "2026-10-11",
+  "ai voiceover for youtube": "2026-10-11",
+  "ai text watermark detector": "2026-10-11",
+  "solo ai game studio": "2026-10-11",
+  "computer use ai agent": "2026-10-11",
+  "ai negotiation agent": "2026-10-11",
+  "ai university admission assistant": "2026-10-11",
+  "lip synced ai avatar": "2026-10-11",
+  "elevenlabs alternative tts": "2026-10-11",
+  "ai music visualizer": "2026-10-11",
+  "book to anime ai": "2026-10-11",
+  "local semantic file search": "2026-10-11",
+  "offline voice assistant": "2026-10-11"
  },
  "marks": {},
  "root_blocklist": [
@@ -1621,6 +1660,25 @@
   "herald os github",
   "lexi rabe 2026",
   "seedream 4.0 gratis",
-  "synthesia lyrics"
+  "synthesia lyrics",
+  "on-device personal agents",
+  "wearable ai agent",
+  "ai agent guardrails",
+  "coding agent workspace cleanup",
+  "ai game difficulty tuning",
+  "unix primitives prompting",
+  "ai agent spend limits",
+  "website to api for agents",
+  "agent prediction market trading",
+  "ai cad automation",
+  "ai automation for real estate",
+  "optimize website for ai agents",
+  "build local agent harness",
+  "ai image prompt generator",
+  "ai creative image upscaler",
+  "ai shorts automation",
+  "ai consistent character generator",
+  "ai headshot generator",
+  "local ai accounting assistant"
  ]
 }
