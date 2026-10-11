@@ -1,4 +1,229 @@
 {
- "pending": [],
+ "pending": [
+  {
+   "term": "on-device personal agents",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/artificial/comments/1x2l9dj/ios_27_quietly_made_ondevice_personal_agents/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai parking ticket appeal",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/artificial/comments/1x2jk3i/man_wins_threeyear_parking_ticket_battle_after/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai voiceover for youtube",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/artificial/comments/1x2eale/chatgpt_being_copyright_police/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai text watermark detector",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/artificial/comments/1x2a240/openais_text_watermark_cant_prove_you_didnt_write/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "wearable ai agent",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/artificial/comments/1x2akuj/which_failure_states_should_a_wearable_agent/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "solo ai game studio",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/artificial/comments/1x2fp9g/video_game_production_in_10_years/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai agent guardrails",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2xqll/two_enterprise_vendors_shipped_the_same_message/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "coding agent workspace cleanup",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2wt98/coding_agents_create_branches_and_worktrees_who/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai game difficulty tuning",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2voal/building_a_feedback_loop_for_an_agent_to_tune/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "unix primitives prompting",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2vc5k/we_ran_1680_ab_trials_testing_50yearold_unix_and/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "computer use ai agent",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2twt5/como_construir_um_agente_de_ia_que_pode_ver_minha/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai agent spend limits",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2t6gb/would_you_allocate_a_spend_budget_for_your_ai/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "website to api for agents",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2sw0y/turn_appwebsites_into_api_for_your_agents/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai negotiation agent",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2pm2q/how_create_an_ai_agent_for_negotiating/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "agent prediction market trading",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2o0hx/cool_find/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai cad automation",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2njew/gpt_6_or_claude_opus_55/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai automation for real estate",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2ljv4/we_automated_15_real_estate_companies_heres_5/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai university admission assistant",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2lin7/ai_agent_for_admission/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "optimize website for ai agents",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x2ianl/i_opened_my_small_website_to_ai_agents_and_logged/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "build local agent harness",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/AI_Agents/comments/1x29w1n/did_you_guys_build_your_own_agent_harness/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai image prompt generator",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x2sxs4/prompt_generator_like_grok_for_pony_v6/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai creative image upscaler",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x2q643/how_do_you_guys_upscale_your_images_is_anything/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai shorts automation",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x2nsym/created_an_ai_automation_for_ai_shorts_content/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai consistent character generator",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x2im0x/what_is_the_best_tool_for_creating_a_standardized/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "lip synced ai avatar",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x2dxse/i_have_tested_13_ai_models_and_38_different/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai headshot generator",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x2bmwy/low_vram_headshot_generator/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "elevenlabs alternative tts",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/StableDiffusion/comments/1x27ic7/are_there_any_good_elevenlabs_alternatives_tts/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "ai music visualizer",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/aivideo/comments/1x2xtl4/golden_cloud_medley_me_a_4k60fps_music_visualizer/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "book to anime ai",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/aivideo/comments/1x2tgxs/im_making_my_book_into_an_anime/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "local semantic file search",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/LocalLLaMA/comments/1x2eeds/opensource_mac_app_that_runs_embeddinggemma_2/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "offline voice assistant",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/LocalLLaMA/comments/1x2cztv/fully_local_conversational_ai_whisper_hermes_8b/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  },
+  {
+   "term": "local ai accounting assistant",
+   "source": "reddit-ai",
+   "reason": "reddit-ai-monitor candidate",
+   "detail": "https://www.reddit.com/r/LocalLLaMA/comments/1x2tggu/model_for_doing_accurate_accounting/ (trends unchecked: rate-limited)",
+   "queued_at": "2026-10-11T03:57:38.735908+00:00"
+  }
+ ],
  "reviewed_rejected": []
 }
