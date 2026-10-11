@@ -1,40 +1,4 @@
 {
- "pending": [
-  {
-   "term": "ai clip maker",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-11T02:18:39.609297+00:00"
-  },
-  {
-   "term": "herald os github",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-11T02:18:39.609297+00:00"
-  },
-  {
-   "term": "lexi rabe 2026",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-11T02:18:39.609297+00:00"
-  },
-  {
-   "term": "seedream 4.0 gratis",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-11T02:18:39.609297+00:00"
-  },
-  {
-   "term": "synthesia lyrics",
-   "source": "feedback",
-   "reason": "daily report verdict=new/revived",
-   "detail": "",
-   "queued_at": "2026-10-11T02:18:39.609297+00:00"
-  }
- ],
+ "pending": [],
  "reviewed_rejected": []
 }
